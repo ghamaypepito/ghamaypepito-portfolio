@@ -16,9 +16,12 @@ const SHOTS = [
   ['02-manifesto', '.manifesto'],
   ['03-services', '#services'],
   ['04-portfolio', '#work'],
-  ['05-experience', '#about'],
-  ['06-quotes', '.quotes'],
-  ['07-contact', '#contact'],
+  ['05-webapps', '#apps'],
+  ['06-ai', '#ai'],
+  ['07-gohighlevel', '#ghl'],
+  ['08-experience', '#about'],
+  ['09-quotes', '.quotes'],
+  ['10-contact', '#contact'],
 ];
 
 await mkdir(OUT, { recursive: true });
@@ -55,6 +58,39 @@ await page.waitForTimeout(1200);
 checks.projectCards = await page.locator('.proj').count();
 checks.realScreenshots = await page.locator('.bw-view img').count();
 checks.fallbackTiles = await page.locator('.bw-fallback').count();
+
+// The added sections and their outbound links.
+checks.sectionsPresent = await page.evaluate(() =>
+  ['work', 'services', 'apps', 'ai', 'ghl', 'about', 'contact']
+    .filter((id) => document.getElementById(id)).length,
+);
+checks.navItems = await page.locator('.nav-links a').count();
+checks.bookingLinks = await page.evaluate(
+  () => [...document.querySelectorAll('a[href*="ghl.southsidestudio.ph"]')].length,
+);
+checks.externalLinksSafe = await page.evaluate(() =>
+  [...document.querySelectorAll('a[target="_blank"]')].every((a) =>
+    (a.getAttribute('rel') || '').includes('noopener'),
+  ),
+);
+
+// The delivery rail and the model toolkit are the two new interactive pieces.
+await page.evaluate(() => window.scrollTo(0, document.querySelector('#apps').offsetTop));
+await page.waitForTimeout(1200);
+const railButtons = page.locator('.rail-btn');
+await railButtons.nth(2).click();
+await page.waitForTimeout(600);
+checks.railExpandsOnClick = await page.locator('.rail-item.is-active .rail-blurb span').isVisible();
+
+await page.evaluate(() => window.scrollTo(0, document.querySelector('#ai').offsetTop));
+await page.waitForTimeout(1200);
+await page.locator('.model').nth(2).click();
+await page.waitForTimeout(600);
+checks.modelSwitches = await page.locator('.model').nth(2).evaluate((el) =>
+  el.classList.contains('is-active'),
+);
+checks.aiOutcomeCards = await page.locator('.ai-card').count();
+checks.ghlFeatures = await page.locator('.ghl-feature').count();
 
 // Filter interaction.
 await page.getByRole('tab', { name: /^E-Commerce/ }).click();
@@ -150,6 +186,14 @@ expect('command palette searched projects', (checks.paletteResults ?? 0) >= 1);
 expect('every scroll reveal became visible', checks.revealsShown === checks.revealsTotal);
 expect('mobile layout does not scroll horizontally', checks.mobileOverflow === false);
 expect('no console errors', errors.length === 0);
+expect('all seven page sections are present', checks.sectionsPresent === 7);
+expect('the nav lists six destinations', checks.navItems === 6);
+expect('the GoHighLevel and booking links are wired', checks.bookingLinks >= 3);
+expect('every external link carries rel=noopener', checks.externalLinksSafe === true);
+expect('the delivery rail expands a step', checks.railExpandsOnClick === true);
+expect('the model toolkit switches', checks.modelSwitches === true);
+expect('four AI outcome cards render', checks.aiOutcomeCards === 4);
+expect('six GoHighLevel features render', checks.ghlFeatures === 6);
 expect(
   `nothing is stranded invisible under prefers-reduced-motion (${JSON.stringify(checks.reducedMotionInvisibleSample)})`,
   checks.reducedMotionInvisible === 0,

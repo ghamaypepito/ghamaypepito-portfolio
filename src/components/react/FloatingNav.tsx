@@ -12,9 +12,20 @@ import CommandPalette from './CommandPalette';
  */
 export default function FloatingNav() {
   const [visible, setVisible] = useState(false);
+  // Below 600px the pill is pinned with left/right instead of being centred,
+  // so the -50% x offset must not be applied.
+  const [centred, setCentred] = useState(true);
   const [active, setActive] = useState<SectionId>('work');
   const [paletteOpen, setPaletteOpen] = useState(false);
   const still = useReducedMotion();
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 601px)');
+    const sync = () => setCentred(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   // Show the nav once the hero has mostly scrolled away.
   useEffect(() => {
@@ -66,11 +77,11 @@ export default function FloatingNav() {
           <motion.nav
             className="floatnav"
             aria-label="Section navigation"
-            initial={still ? { opacity: 0 } : { opacity: 0, y: -24, scale: 0.94, x: '-50%' }}
-            animate={still ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1, x: '-50%' }}
-            exit={still ? { opacity: 0 } : { opacity: 0, y: -18, scale: 0.96, x: '-50%' }}
-            transition={springSoft}
-            style={{ x: '-50%' }}
+            initial={{ opacity: 0, y: centred ? -24 : 24, scale: 0.94 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: centred ? -18 : 18, scale: 0.96 }}
+            transition={still ? { duration: 0 } : springSoft}
+            style={centred ? { x: '-50%' } : undefined}
           >
             <a
               href="#top"
@@ -83,25 +94,27 @@ export default function FloatingNav() {
                    dangerouslySetInnerHTML={{ __html: BRAND_MARK }} />
             </a>
 
-            {SECTIONS.map((link) => (
-              <span className="fn-linkwrap" key={link.id}>
-                {active === link.id && (
-                  <motion.span
-                    className="fn-pill"
-                    layoutId="fn-pill"
-                    transition={still ? { duration: 0 } : spring}
-                  />
-                )}
-                <a
-                  href={`#${link.id}`}
-                  className={'fn-link' + (active === link.id ? ' is-active' : '')}
-                  aria-current={active === link.id ? 'true' : undefined}
-                  onClick={(e) => go(e, link.id)}
-                >
-                  {link.label}
-                </a>
-              </span>
-            ))}
+            <div className="fn-scroll">
+              {SECTIONS.map((link) => (
+                <span className="fn-linkwrap" key={link.id}>
+                  {active === link.id && (
+                    <motion.span
+                      className="fn-pill"
+                      layoutId="fn-pill"
+                      transition={still ? { duration: 0 } : spring}
+                    />
+                  )}
+                  <a
+                    href={`#${link.id}`}
+                    className={'fn-link' + (active === link.id ? ' is-active' : '')}
+                    aria-current={active === link.id ? 'true' : undefined}
+                    onClick={(e) => go(e, link.id)}
+                  >
+                    {link.label}
+                  </a>
+                </span>
+              ))}
+            </div>
 
             <button
               type="button"

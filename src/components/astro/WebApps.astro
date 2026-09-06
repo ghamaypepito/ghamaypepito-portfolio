@@ -1,0 +1,58 @@
+---
+import { SITE } from '@/content/site';
+import Kicker from './Kicker.astro';
+import Icon from './Icon.astro';
+import ProcessRail from '../react/ProcessRail';
+
+const { webapp } = SITE;
+---
+<section class="band apps" id="apps" aria-labelledby="apps-h">
+  <div class="wrap">
+    <div class="apps-head" data-reveal>
+      <div>
+        <Kicker light>Web Apps</Kicker>
+        <h2 class="section-title" id="apps-h">
+          {webapp.title[0]}<br /><span class="muted-h">{webapp.title[1]}</span>
+        </h2>
+      </div>
+      <div class="apps-lead">
+        <p class="section-sub">{webapp.lead}</p>
+        <a
+          class="btn-primary"
+          href={webapp.bookingUrl}
+          target="_blank"
+          rel="noreferrer noopener"
+          data-cursor="Book ↗"
+        >
+          {webapp.bookingLabel}
+          <Icon name="arrowUpRight" size={17} />
+        </a>
+      </div>
+    </div>
+
+    <div class="apps-grid">
+      <ul class="cap-list">
+        {webapp.capabilities.map((c) => (
+          <li class="cap" data-reveal data-reveal-group="apps-caps">
+            <span class="cap-icon" aria-hidden="true"><Icon name={c.icon} size={22} /></span>
+            <div>
+              <h3 class="cap-title">{c.title}</h3>
+              <p class="cap-blurb">{c.blurb}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <div class="apps-rail">
+        <ProcessRail client:visible />
+      </div>
+    </div>
+
+    <div class="apps-stack" data-reveal>
+      <span class="apps-stack-label">Built with</span>
+      <div class="apps-stack-chips">
+        {webapp.stack.map((t) => <span class="chip">{t}</span>)}
+      </div>
+    </div>
+  </div>
+</section>

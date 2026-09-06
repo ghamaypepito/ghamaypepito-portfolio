@@ -1,0 +1,40 @@
+---
+import { SITE } from '@/content/site';
+import Kicker from './Kicker.astro';
+import Icon from './Icon.astro';
+import ModelToolkit from '../react/ModelToolkit';
+
+const { ai } = SITE;
+---
+<section class="band ai" id="ai" aria-labelledby="ai-h">
+  <div class="ai-glow" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="ai-head" data-reveal>
+      <div>
+        <Kicker light>AI</Kicker>
+        <h2 class="section-title" id="ai-h">
+          {ai.title[0]}<br /><span class="muted-h">{ai.title[1]}</span>
+        </h2>
+      </div>
+      <p class="section-sub ai-lead">{ai.lead}</p>
+    </div>
+
+    <ul class="ai-grid">
+      {ai.outcomes.map((o, i) => (
+        <li class="ai-card" data-reveal data-reveal-group="ai-cards">
+          <span class="ai-num" aria-hidden="true">0{i + 1}</span>
+          <span class="ai-icon" aria-hidden="true"><Icon name={o.icon} size={24} /></span>
+          <h3 class="ai-title">{o.title}</h3>
+          <p class="ai-blurb">{o.blurb}</p>
+        </li>
+      ))}
+    </ul>
+
+    <div class="ai-toolkit">
+      <h3 class="ai-toolkit-label" data-reveal>The toolkit underneath</h3>
+      <ModelToolkit client:visible />
+      <p class="ai-footnote" data-reveal>{ai.footnote}</p>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,69 @@
+---
+import { SITE } from '@/content/site';
+import Kicker from './Kicker.astro';
+import Icon from './Icon.astro';
+import BrandMark from './BrandMark.astro';
+
+const { ghl } = SITE;
+---
+<section class="band ghl" id="ghl" aria-labelledby="ghl-h">
+  <div class="wrap">
+    <div class="ghl-panel">
+      <div class="ghl-left" data-reveal>
+        <Kicker>Platform</Kicker>
+        <h2 class="section-title ghl-title" id="ghl-h">
+          {ghl.title[0]}<br /><span class="muted-h">{ghl.title[1]}</span>
+        </h2>
+        <p class="section-sub">{ghl.lead}</p>
+
+        <a
+          class="btn-primary ghl-cta"
+          href={ghl.portalUrl}
+          target="_blank"
+          rel="noreferrer noopener"
+          data-cursor="Open ↗"
+        >
+          Open the portal
+          <Icon name="arrowUpRight" size={17} />
+        </a>
+        <p class="ghl-url">{ghl.portalLabel}</p>
+      </div>
+
+      <div class="ghl-right" data-reveal style="--reveal-delay: 120ms">
+        <ul class="ghl-features">
+          {ghl.features.map((f) => (
+            <li class="ghl-feature" data-reveal data-reveal-group="ghl">
+              <span class="ghl-ficon" aria-hidden="true"><Icon name={f.icon} size={19} /></span>
+              <div>
+                <h3 class="ghl-ftitle">{f.title}</h3>
+                <p class="ghl-fblurb">{f.blurb}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <a
+          class="ghl-portal"
+          href={ghl.portalUrl}
+          target="_blank"
+          rel="noreferrer noopener"
+          data-cursor="Open ↗"
+          aria-label={`Open the GoHighLevel portal at ${ghl.portalLabel}`}
+        >
+          <span class="bw-bar" aria-hidden="true">
+            <i></i><i></i><i></i>
+            <span class="bw-url">{ghl.portalLabel}</span>
+          </span>
+          <span class="ghl-portal-body">
+            <span class="ghl-portal-mark"><BrandMark size={30} /></span>
+            <span class="ghl-portal-text">
+              <strong>White-label client portal</strong>
+              Your clients log in here, not into someone else's brand.
+            </span>
+            <span class="ghl-portal-go" aria-hidden="true"><Icon name="arrowUpRight" size={16} /></span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

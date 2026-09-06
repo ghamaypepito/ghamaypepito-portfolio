@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { SITE } from '@/content/site';
-import { SECTIONS, scrollToSection } from '@/lib/scroll';
+import { SECTIONS, EXTRA_SECTIONS, scrollToSection } from '@/lib/scroll';
 import { spring, fade } from '@/lib/motion';
 import Icon from './Icon';
 import type { IconName } from '@/lib/icons';
@@ -33,7 +33,7 @@ export default function CommandPalette({
   const still = useReducedMotion();
 
   const commands = useMemo<Command[]>(() => {
-    const jump: Command[] = SECTIONS.map((s) => ({
+    const jump: Command[] = [...SECTIONS, ...EXTRA_SECTIONS].map((s) => ({
       id: `go-${s.id}`,
       label: `Go to ${s.label}`,
       group: 'Navigate',
@@ -57,6 +57,22 @@ export default function CommandPalette({
         group: 'Get in touch',
         icon: 'phone',
         run: () => { window.location.href = `tel:${SITE.phone.replace(/\s/g, '')}`; },
+      },
+      {
+        id: 'book',
+        label: 'Book a discovery call',
+        hint: 'Opens the booking page',
+        group: 'Get in touch',
+        icon: 'calendar' as IconName,
+        run: () => window.open(SITE.webapp.bookingUrl, '_blank', 'noopener,noreferrer'),
+      },
+      {
+        id: 'ghl-portal',
+        label: 'Open the GoHighLevel portal',
+        hint: SITE.ghl.portalLabel,
+        group: 'Get in touch',
+        icon: 'arrowUpRight' as IconName,
+        run: () => window.open(SITE.ghl.portalUrl, '_blank', 'noopener,noreferrer'),
       },
       ...SITE.socials.map((s) => ({
         id: `soc-${s.label}`,

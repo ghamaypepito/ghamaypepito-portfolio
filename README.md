@@ -65,11 +65,38 @@ JavaScript at all. Only five components hydrate, and each waits for a reason to:
 | `FloatingNav` | `client:idle` | Scroll spy, travelling pill, ⌘K |
 | `ServicesGrid` | `client:visible` | Hover state that slides between cards |
 | `PortfolioGrid` | `client:visible` | Filtering, paging, layout animation |
+| `ProcessRail` | `client:visible` | Expanding delivery steps |
+| `ModelToolkit` | `client:visible` | Switching between the three models |
 | `Testimonials` | `client:visible` | Carousel, drag, autoplay |
 | `ContactForm` | `client:visible` | Validation, submission |
 
-Hero, manifesto, experience, skills, contact details and footer are pure
-Astro — they cost zero bytes of JavaScript.
+Hero, manifesto, experience, skills, contact details, the GoHighLevel band and
+the footer are pure Astro — they cost zero bytes of JavaScript.
+
+### Page sections
+
+Hero → Manifesto → Services → Portfolio → **Web Apps** → **AI** →
+**GoHighLevel** → Experience → Skills → Testimonials → Contact.
+
+Six of those are in the nav; GoHighLevel is reachable from the ⌘K palette,
+because a pill nav stops being scannable past six items.
+
+### Two links that need your input
+
+Both are defined once in `src/content/site.ts` and used everywhere else:
+
+| Field | Currently | Should be |
+| --- | --- | --- |
+| `webapp.bookingUrl` | `https://ghl.southsidestudio.ph` | The exact GoHighLevel **calendar** URL for discovery calls |
+| `ghl.portalUrl` | `https://ghl.southsidestudio.ph` | Correct as-is |
+
+The booking URL is a placeholder pointing at the portal root — it works, but it
+drops people on the front door rather than a booking slot. It is marked
+`TODO(ghamay)` in the content file.
+
+`ai.models` also carries a one-line description of what each of Claude, ChatGPT
+and Grok is used for. That is the only opinionated copy on the page; it is
+marked `TODO` for you to sanity-check against how you actually split the work.
 
 ### Editing content
 

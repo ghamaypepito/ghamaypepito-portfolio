@@ -13,8 +13,18 @@ export function scrollToSection(id: string): void {
 export const SECTIONS = [
   { id: 'work', label: 'Work' },
   { id: 'services', label: 'Services' },
+  { id: 'apps', label: 'Web Apps' },
+  { id: 'ai', label: 'AI' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact' },
+] as const;
+
+/**
+ * Sections the command palette can reach that are not worth a nav slot of
+ * their own — the pill nav stops being scannable past six items.
+ */
+export const EXTRA_SECTIONS = [
+  { id: 'ghl', label: 'GoHighLevel' },
 ] as const;
 
 export type SectionId = (typeof SECTIONS)[number]['id'];

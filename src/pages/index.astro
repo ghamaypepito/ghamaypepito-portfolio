@@ -4,6 +4,9 @@ import Hero from '@/components/astro/Hero.astro';
 import Manifesto from '@/components/astro/Manifesto.astro';
 import Services from '@/components/astro/Services.astro';
 import Portfolio from '@/components/astro/Portfolio.astro';
+import WebApps from '@/components/astro/WebApps.astro';
+import AiPractice from '@/components/astro/AiPractice.astro';
+import GoHighLevel from '@/components/astro/GoHighLevel.astro';
 import Experience from '@/components/astro/Experience.astro';
 import Skills from '@/components/astro/Skills.astro';
 import Quotes from '@/components/astro/Quotes.astro';
@@ -13,7 +16,7 @@ import FloatingNav from '@/components/react/FloatingNav';
 
 const title = 'Ghamay Pepito — Website Designer, Developer & Digital Marketer';
 const description =
-  "Portfolio of Emeterio 'Ghamay' Pepito III — Website Designer & Developer, Digital Marketing Manager and SEO Specialist based in Cebu City. 38 live projects across web design, e-commerce, branding and SEO.";
+  "Portfolio of Emeterio 'Ghamay' Pepito III — Website Designer & Developer, Digital Marketing Manager and SEO Specialist in Cebu City. Web apps, AI-assisted marketing systems, GoHighLevel implementation, and 38 live projects.";
 ---
 <Base title={title} description={description}>
   <FloatingNav client:idle />
@@ -22,6 +25,9 @@ const description =
     <Manifesto />
     <Services />
     <Portfolio />
+    <WebApps />
+    <AiPractice />
+    <GoHighLevel />
     <Experience />
     <Skills />
     <Quotes />

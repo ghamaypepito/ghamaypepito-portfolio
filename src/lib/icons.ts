@@ -22,6 +22,16 @@ export const ICON_PATHS = {
   close: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
   check: '<polyline points="20 6 9 17 4 12"/>',
   corner: '<polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/>',
+  window: '<rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 8h20"/><circle cx="5.5" cy="5.5" r=".6" fill="currentColor"/><circle cx="8" cy="5.5" r=".6" fill="currentColor"/>',
+  layers: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+  flow: '<circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M7.4 7.2 10.6 16M16.6 7.2 13.4 16M7.5 6h9"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  users: '<path d="M16 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.2"/><path d="M22 20v-2a4 4 0 0 0-3-3.87"/><path d="M16.5 3.6a4 4 0 0 1 0 6.8"/>',
+  funnel: '<path d="M3 4h18l-7 8v7l-4 2v-9L3 4Z"/>',
+  chart: '<path d="M3 3v18h18"/><polyline points="7 15 11 10 15 13 20 6"/>',
+  wand: '<path d="M15 4V2M15 10V8M12.5 6h-2M19.5 6h-2M17 4.5 15.6 5.9M17 7.5l-1.4-1.4M13 4.5l1.4 1.4M13 7.5l1.4-1.4"/><path d="M4 20 14 10l1.6 1.6L5.6 21.6 4 20Z"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/>',
+  rocket: '<path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.74-.83.73-2.1-.07-2.9a2.05 2.05 0 0 0-2.93-.1Z"/><path d="M12 15 9 12a12 12 0 0 1 7-9 12 12 0 0 1 5 5 12 12 0 0 1-9 7Z"/><circle cx="15" cy="9" r="1.6"/>',
 } as const;
 
 export type IconName = keyof typeof ICON_PATHS;

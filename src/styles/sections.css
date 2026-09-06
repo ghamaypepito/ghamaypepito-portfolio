@@ -45,6 +45,7 @@
   will-change: transform, opacity;
 }
 .fn-brand { display: grid; place-items: center; width: 30px; height: 30px; margin-right: 4px; }
+.fn-scroll { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .fn-linkwrap { position: relative; display: flex; }
 .fn-link {
   position: relative; z-index: 1;
@@ -605,13 +606,36 @@
   .nav-links { display: none; }
   .quote-photo { max-width: 320px; }
 }
+/* Six nav items no longer fit a centred pill on a laptop; let it breathe. */
+@media (max-width: 1080px) {
+  .fn-link { padding: 8px 11px; font-size: 13px; }
+}
+
 @media (max-width: 600px) {
   .svc-grid, .proj-grid { grid-template-columns: 1fr; }
   .stats { gap: 30px; }
-  .floatnav { top: auto; bottom: 16px; padding: 6px; }
+  /* The pill moves to the bottom. Only the links scroll sideways — the CTA
+     stays pinned, because a call to action you have to go looking for is not
+     one. The right-edge fade is the hint that there is more to scroll. */
+  .floatnav {
+    top: auto; bottom: 16px; padding: 6px;
+    left: 12px; right: 12px; transform: none !important;
+    max-width: calc(100vw - 24px);
+    justify-content: flex-start;
+  }
   .floatnav .fn-brand, .floatnav .fn-kbd { display: none; }
-  .fn-link { padding: 8px 11px; font-size: 13px; }
-  .fn-cta { padding: 8px 14px; }
+  .fn-scroll {
+    flex: 1; min-width: 0;
+    overflow-x: auto; overflow-y: hidden;
+    scrollbar-width: none; -ms-overflow-style: none;
+    scroll-snap-type: x proximity;
+    -webkit-mask-image: linear-gradient(90deg, #000 84%, transparent);
+    mask-image: linear-gradient(90deg, #000 84%, transparent);
+  }
+  .fn-scroll::-webkit-scrollbar { display: none; }
+  .fn-linkwrap { flex-shrink: 0; scroll-snap-align: start; }
+  .fn-link { padding: 8px 12px; font-size: 13px; white-space: nowrap; }
+  .fn-cta { flex-shrink: 0; padding: 8px 14px; white-space: nowrap; margin-left: 6px; }
   .hero-name { font-size: clamp(48px, 16vw, 72px); }
 }
 

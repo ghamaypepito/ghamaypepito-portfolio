@@ -8,7 +8,9 @@ export type Social = { label: string; short: string; href: string };
 export type Stat = { value: number; suffix: string; label: [string, string] };
 export type IconName =
   | 'code' | 'spark' | 'pen' | 'bolt' | 'arrow' | 'arrowUpRight'
-  | 'mail' | 'phone' | 'pin' | 'quote' | 'cap' | 'plus' | 'search' | 'close';
+  | 'mail' | 'phone' | 'pin' | 'quote' | 'cap' | 'plus' | 'search' | 'close'
+  | 'window' | 'layers' | 'flow' | 'calendar' | 'users' | 'funnel'
+  | 'chart' | 'wand' | 'target' | 'rocket';
 
 export type Service = {
   key: string;
@@ -40,6 +42,13 @@ export type Testimonial = {
    */
   verified: boolean;
 };
+
+export type Capability = { icon: IconName; title: string; blurb: string };
+
+export type ProcessStep = { step: string; title: string; blurb: string };
+
+/** One of the AI models in the toolkit. `mark` is a text monogram, not a logo. */
+export type Model = { name: string; mark: string; role: string; blurb: string };
 
 export type ProjectCategory =
   | 'Web Design' | 'Development' | 'E-Commerce' | 'Branding' | 'SEO';
@@ -132,6 +141,137 @@ export const SITE = {
       tools: ['Lead Gen', 'CRM Flows', 'Automation', 'Consulting', 'CMS / CPanel'],
     },
   ] satisfies Service[],
+
+
+  /* ---------------------------------------------------------------------
+     Web application development.
+     TODO(ghamay): `bookingUrl` is a placeholder pointing at the GoHighLevel
+     portal root. Replace it with the exact calendar URL once you have it —
+     it is the only place the discovery-call CTA is defined.
+     ------------------------------------------------------------------- */
+  webapp: {
+    bookingUrl: 'https://ghl.southsidestudio.ph',
+    bookingLabel: 'Book a discovery call',
+    title: ['Beyond the', 'brochure site.'],
+    lead: 'Some problems do not fit a page and a contact form. When a business needs something that logs in, calculates, schedules or syncs, I build the application for it.',
+    capabilities: [
+      {
+        icon: 'users',
+        title: 'Client portals & dashboards',
+        blurb: 'Somewhere your customers log in, see their own data, and stop emailing you for it.',
+      },
+      {
+        icon: 'calendar',
+        title: 'Booking & scheduling',
+        blurb: 'Availability, reminders and payment collection that run without anyone chasing them.',
+      },
+      {
+        icon: 'flow',
+        title: 'Internal tools',
+        blurb: 'The spreadsheet that runs your business, rebuilt as something that will not break.',
+      },
+      {
+        icon: 'layers',
+        title: 'APIs & integrations',
+        blurb: 'Getting the systems you already pay for to talk to each other properly.',
+      },
+    ] satisfies Capability[],
+    process: [
+      {
+        step: 'Discover',
+        title: 'A call and a real scope',
+        blurb: 'We work out what the thing actually has to do, and what it does not. You get a scope you can price.',
+      },
+      {
+        step: 'Prototype',
+        title: 'Something clickable, fast',
+        blurb: 'A working prototype in days, so the discussion is about the real product rather than a wireframe.',
+      },
+      {
+        step: 'Build',
+        title: 'Typed, tested, deployed',
+        blurb: 'Built in the open with the staging URL shared from day one. No month-long silences.',
+      },
+      {
+        step: 'Iterate',
+        title: 'Measured, then improved',
+        blurb: 'Analytics from launch, then changes driven by what people actually do rather than opinion.',
+      },
+    ] satisfies ProcessStep[],
+    stack: ['React', 'TypeScript', 'Astro', 'Node.js', 'REST APIs', 'Cloudflare', 'WordPress', 'Shopify'],
+  },
+
+  /* ---------------------------------------------------------------------
+     AI practice. Framed around delivered outcomes rather than claims about
+     any particular model, so it stays accurate as the tooling moves.
+     ------------------------------------------------------------------- */
+  ai: {
+    title: ['AI that ships work,', 'not demos.'],
+    lead: 'The interesting part was never the chatbot. It is what happens when research, copy, and follow-up stop being the bottleneck — and a two-person team starts shipping like a ten-person one.',
+    outcomes: [
+      {
+        icon: 'wand',
+        title: 'Content systems',
+        blurb: 'Briefs, drafts and on-brand copy produced at volume — then edited by a human before anything goes live.',
+      },
+      {
+        icon: 'bolt',
+        title: 'Automation pipelines',
+        blurb: 'Capture, enrichment, routing and follow-up wired together so the busywork runs itself overnight.',
+      },
+      {
+        icon: 'target',
+        title: 'Research & analysis',
+        blurb: 'Market, competitor and keyword research synthesised into something you can act on the same day.',
+      },
+      {
+        icon: 'spark',
+        title: 'AI inside your product',
+        blurb: 'Assistants, smarter search and structured extraction built into the sites and apps I deliver.',
+      },
+    ] satisfies Capability[],
+    /* TODO(ghamay): sanity-check these one-liners against how you actually
+       split the work — they are the only opinionated copy on the page. */
+    models: [
+      {
+        name: 'Claude',
+        mark: 'C',
+        role: 'Reasoning & build',
+        blurb: 'Long documents, code and anything where being careful matters more than being quick.',
+      },
+      {
+        name: 'ChatGPT',
+        mark: 'G',
+        role: 'Drafting & production',
+        blurb: 'Fast ideation, first drafts and the everyday volume that keeps campaigns fed.',
+      },
+      {
+        name: 'Grok',
+        mark: 'X',
+        role: 'Signals & timing',
+        blurb: 'What is moving right now — useful when a campaign has to land this week, not next quarter.',
+      },
+    ] satisfies Model[],
+    footnote: 'A person reviews everything before a client ever sees it. AI sets the pace; it does not sign off on the work.',
+  },
+
+  /* ---------------------------------------------------------------------
+     GoHighLevel — the white-label portal is a live client-facing product.
+     ------------------------------------------------------------------- */
+  ghl: {
+    portalUrl: 'https://ghl.southsidestudio.ph',
+    portalLabel: 'ghl.southsidestudio.ph',
+    title: ['GoHighLevel,', 'run properly.'],
+    lead: 'Most agencies sell you a GoHighLevel licence and leave. I set the account up, migrate what you already have, build the automations, and stay on to keep them working.',
+    features: [
+      { icon: 'users', title: 'CRM & pipelines', blurb: 'Every lead in one place, with stages that match how you actually sell.' },
+      { icon: 'funnel', title: 'Funnels & pages', blurb: 'Landing pages and funnels built to convert, not just to exist.' },
+      { icon: 'calendar', title: 'Calendars & booking', blurb: 'Round-robin scheduling, reminders and no-show follow-up.' },
+      { icon: 'flow', title: 'Email & SMS automation', blurb: 'Nurture and reactivation sequences that run on their own.' },
+      { icon: 'spark', title: 'Reviews & reputation', blurb: 'Review requests triggered automatically at the right moment.' },
+      { icon: 'chart', title: 'Reporting', blurb: 'Dashboards that answer where the leads came from and what they cost.' },
+    ] satisfies Capability[],
+  },
 
   experience: [
     {
