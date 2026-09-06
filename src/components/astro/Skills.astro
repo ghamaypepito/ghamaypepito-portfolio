@@ -1,0 +1,19 @@
+---
+import { SITE } from '@/content/site';
+import Kicker from './Kicker.astro';
+---
+<section class="band skills" aria-labelledby="skills-h">
+  <div class="wrap">
+    <div data-reveal>
+      <Kicker light>Capabilities</Kicker>
+      <h2 class="section-title skills-title" id="skills-h">
+        Tools &amp; talents I bring to every brief.
+      </h2>
+    </div>
+    <ul class="skill-cloud">
+      {SITE.skills.map((s) => (
+        <li class="skill" data-reveal data-reveal-group="skills">{s}</li>
+      ))}
+    </ul>
+  </div>
+</section>

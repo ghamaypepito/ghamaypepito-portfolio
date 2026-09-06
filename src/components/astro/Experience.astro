@@ -1,0 +1,44 @@
+---
+import { SITE } from '@/content/site';
+import Kicker from './Kicker.astro';
+import Icon from './Icon.astro';
+---
+<section class="band exp" id="about" aria-labelledby="about-h">
+  <div class="wrap exp-grid">
+    <div class="exp-rail">
+      <div data-reveal>
+        <Kicker light>Experience</Kicker>
+        <h2 class="section-title" id="about-h">The journey<br />so far.</h2>
+        <p class="section-sub">
+          Twelve years across agencies, startups and my own ventures — marketing,
+          web and automation.
+        </p>
+      </div>
+
+      <div class="edu" data-reveal style="--reveal-delay: 120ms">
+        <h3 class="edu-head"><Icon name="cap" size={20} /><span>Education</span></h3>
+        {SITE.education.map((e) => (
+          <div class="edu-item">
+            <div class="edu-school">{e.school}</div>
+            <div class="edu-degree">{e.degree} <span>· {e.year}</span></div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <ol class="timeline">
+      {SITE.experience.map((x) => (
+        <li class="tl-item" data-reveal data-reveal-group="timeline">
+          <span class="tl-dot" aria-hidden="true"></span>
+          <div class="tl-top">
+            <h3 class="tl-company">{x.company}</h3>
+            <span class="tl-period">{x.period}</span>
+          </div>
+          <div class="tl-role">{x.role}</div>
+          <div class="tl-meta">{x.meta}</div>
+          <p class="tl-blurb">{x.blurb}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

@@ -1,0 +1,31 @@
+---
+import { Image } from 'astro:assets';
+import { SITE } from '@/content/site';
+import avatar from '@/assets/avatar.jpg';
+
+const year = new Date().getFullYear();
+---
+<footer class="footer">
+  <Image class="foot-face" src={avatar} alt="" width={128} height={128} loading="lazy" />
+  <p class="foot-note"><strong>Thanks for scrolling,</strong> that's all folks.</p>
+
+  <div class="foot-socials">
+    {SITE.socials.map((s) => (
+      <a
+        href={s.href}
+        target="_blank"
+        rel="noreferrer noopener"
+        class="soc"
+        aria-label={`${SITE.name} on ${s.label}`}
+      >
+        <span aria-hidden="true">{s.short}</span>
+      </a>
+    ))}
+  </div>
+
+  <p class="foot-copy">© {year} {SITE.fullName}. Designed &amp; built in {SITE.locality}.</p>
+  <p class="foot-colophon">
+    Built with Astro and hand-written CSS. Sora and Manrope, self-hosted.
+    Press <kbd>⌘K</kbd> for the command menu.
+  </p>
+</footer>

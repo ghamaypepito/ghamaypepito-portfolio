@@ -1,0 +1,18 @@
+node_modules/
+dist/
+.astro/
+.wrangler/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+npm-debug.log*
+
+# Claude Design handoff bundle — reference only, contains unpublished personal
+# photos and the source resume. Kept locally, never committed.
+_handoff/
+
+# Scratch output: generated source images, verification screenshots.
+# The processed assets that the site actually uses are committed.
+_gen/

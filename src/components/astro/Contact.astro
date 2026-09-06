@@ -1,0 +1,47 @@
+---
+import { Image } from 'astro:assets';
+import { SITE } from '@/content/site';
+import Kicker from './Kicker.astro';
+import Icon from './Icon.astro';
+import ContactForm from '../react/ContactForm';
+import avatar from '@/assets/avatar.jpg';
+---
+<section class="band contact" id="contact" aria-labelledby="contact-h">
+  <div class="wrap contact-grid">
+    <div class="contact-left" data-reveal>
+      <Kicker light>Contact</Kicker>
+      <h2 class="section-title" id="contact-h">
+        Got a project?<br /><span class="muted-h">Let's talk.</span>
+      </h2>
+      <p class="section-sub">
+        Tell me what you're building and where you want it to go. I'll come back with
+        a plan and an honest estimate.
+      </p>
+
+      <div class="avail">
+        <Image class="avail-face" src={avatar} alt="" width={104} height={104} loading="lazy" />
+        <div>
+          <p class="avail-top"><span class="pulse" aria-hidden="true"></span>Available for new work</p>
+          <p class="avail-sub">Usually replies within a day · {SITE.locality} (GMT+8)</p>
+        </div>
+      </div>
+
+      <ul class="contact-list">
+        <li>
+          <span class="ci" aria-hidden="true"><Icon name="mail" size={18} /></span>
+          <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+        </li>
+        <li>
+          <span class="ci" aria-hidden="true"><Icon name="phone" size={18} /></span>
+          <a href={`tel:${SITE.phone.replace(/\s/g, '')}`}>{SITE.phone}</a>
+        </li>
+        <li>
+          <span class="ci" aria-hidden="true"><Icon name="pin" size={18} /></span>
+          <span>{SITE.location}</span>
+        </li>
+      </ul>
+    </div>
+
+    <ContactForm client:visible />
+  </div>
+</section>

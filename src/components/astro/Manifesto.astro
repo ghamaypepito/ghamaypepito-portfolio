@@ -1,0 +1,45 @@
+---
+import { Image } from 'astro:assets';
+import { SITE } from '@/content/site';
+import Kicker from './Kicker.astro';
+import Icon from './Icon.astro';
+import Counter from '../react/Counter';
+import desk from '@/assets/desk.jpg';
+---
+<section class="band manifesto" aria-labelledby="manifesto-h">
+  <div class="mani-bg" aria-hidden="true">
+    <Image src={desk} alt="" widths={[900, 1600]} sizes="100vw" loading="lazy" />
+  </div>
+
+  <div class="wrap manifesto-grid">
+    <div class="mani-left" data-reveal>
+      <Kicker light>Contact</Kicker>
+      <h2 class="mani-h">Any type of query<br />&amp; discussion.</h2>
+      <p class="mani-p">
+        Open to freelance projects, retainers and collaborations. The fastest way to a
+        reply is a short note about what you're building.
+      </p>
+      <a href={`mailto:${SITE.email}`} class="link-arrow">
+        {SITE.email} <Icon name="arrow" size={17} />
+      </a>
+    </div>
+
+    <div class="mani-right" data-reveal style="--reveal-delay: 120ms">
+      <h3 class="mani-quote" id="manifesto-h">{SITE.manifesto.title}</h3>
+      <p class="mani-p mani-p--wide">{SITE.manifesto.body}</p>
+
+      <dl class="stats">
+        {SITE.stats.map((st) => (
+          <div class="stat">
+            <dd class="stat-val">
+              <Counter client:visible to={st.value} suffix={st.suffix} />
+            </dd>
+            <dt class="stat-label">
+              {st.label.map((l) => <span>{l}</span>)}
+            </dt>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </div>
+</section>

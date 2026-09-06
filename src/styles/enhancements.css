@@ -1,0 +1,165 @@
+/* ============================================================================
+   Additions beyond the handoff: ambient hero treatment, the custom cursor,
+   the command palette, and the shared scroll-reveal primitive.
+   ========================================================================== */
+
+/* ---------- SCROLL REVEAL ----------
+   One class, driven by a single IntersectionObserver in reveal.ts. Blur is
+   what makes the entrance read as expensive rather than merely delayed. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  filter: blur(6px);
+  transition:
+    opacity var(--dur-reveal) var(--ease-out-quart) var(--reveal-delay, 0ms),
+    transform var(--dur-reveal) var(--ease-out-expo) var(--reveal-delay, 0ms),
+    filter var(--dur-reveal) var(--ease-out-quart) var(--reveal-delay, 0ms);
+  will-change: opacity, transform, filter;
+}
+[data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  will-change: auto;
+}
+/* Never hide content from a reader who cannot run scripts. */
+.no-js [data-reveal] { opacity: 1; transform: none; filter: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1; transform: none; filter: none; }
+}
+
+/* ---------- AMBIENT HERO ----------
+   Two slow-drifting radial washes plus a static grain plate. Both are
+   transform-only, so they cost the compositor and nothing else. */
+.aurora {
+  position: absolute; inset: -30% -10% auto -10%;
+  height: 130%; z-index: 0; pointer-events: none;
+  overflow: hidden; contain: strict;
+}
+.aurora span {
+  position: absolute; display: block;
+  width: 46vw; height: 46vw; border-radius: 50%;
+  filter: blur(90px); opacity: .5;
+  will-change: transform;
+}
+.aurora span:nth-child(1) {
+  top: 4%; left: 58%;
+  background: radial-gradient(circle, rgba(242,179,61,.34), transparent 68%);
+  animation: drift-a 26s var(--ease-in-out) infinite alternate;
+}
+.aurora span:nth-child(2) {
+  top: 34%; left: 22%;
+  background: radial-gradient(circle, rgba(94,133,214,.24), transparent 68%);
+  animation: drift-b 32s var(--ease-in-out) infinite alternate;
+}
+@keyframes drift-a {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(-8%, 10%, 0) scale(1.16); }
+}
+@keyframes drift-b {
+  from { transform: translate3d(0, 0, 0) scale(1.1); }
+  to   { transform: translate3d(12%, -8%, 0) scale(.92); }
+}
+
+/* Film grain — an inline SVG turbulence tile, so no extra request. */
+.grain {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none; opacity: .16; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+}
+.hero > *:not(.aurora):not(.grain) { position: relative; z-index: 2; }
+
+/* ---------- CUSTOM CURSOR ----------
+   Desktop pointers only. Hidden entirely from touch and from anyone who has
+   asked for reduced motion. */
+.cursor, .cursor-dot { display: none; }
+
+@media (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .cursor {
+    display: grid; place-items: center;
+    position: fixed; top: 0; left: 0;
+    width: 34px; height: 34px; border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, .45);
+    pointer-events: none; z-index: 900;
+    font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 700;
+    letter-spacing: .04em; color: var(--ink);
+    white-space: nowrap; overflow: hidden;
+    will-change: transform, width, height;
+  }
+  .cursor-label { opacity: 0; transform: scale(.6); }
+  .cursor.is-link {
+    width: 92px; height: 92px;
+    background: var(--accent); border-color: var(--accent);
+  }
+  .cursor.is-link .cursor-label { opacity: 1; transform: scale(1); }
+  .cursor.is-hidden { opacity: 0; }
+  .cursor-dot {
+    display: block; position: fixed; top: 0; left: 0;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent); pointer-events: none; z-index: 901;
+    will-change: transform;
+  }
+  .cursor.is-link ~ .cursor-dot { opacity: 0; }
+}
+
+/* ---------- COMMAND PALETTE ---------- */
+.cmdk-backdrop {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(12, 15, 22, .62);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 12vh 20px 20px;
+}
+.cmdk {
+  width: min(560px, 100%);
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, .8);
+  will-change: transform, opacity;
+}
+.cmdk-input {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 18px; border-bottom: 1px solid var(--line);
+  color: var(--muted);
+}
+.cmdk-input input {
+  flex: 1; background: none; border: 0; outline: none;
+  font-family: 'Manrope', sans-serif; font-size: 16px; color: var(--text);
+}
+.cmdk-input input::placeholder { color: var(--muted-2); }
+.cmdk-list { list-style: none; max-height: 46vh; overflow-y: auto; padding: 8px; }
+.cmdk-group {
+  font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--muted-2);
+  padding: 12px 12px 6px;
+}
+.cmdk-item {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; text-align: left;
+  padding: 11px 12px; border-radius: 10px;
+  background: none; border: 0; cursor: pointer;
+  font-size: 15px; color: var(--muted);
+}
+.cmdk-item[aria-selected='true'] { background: rgba(255, 255, 255, .06); color: var(--text); }
+.cmdk-item .ci-mark { color: var(--accent); display: grid; place-items: center; width: 20px; }
+.cmdk-item .ci-sub { margin-left: auto; font-size: 12px; color: var(--muted-2); }
+.cmdk-foot {
+  display: flex; gap: 16px; padding: 10px 18px;
+  border-top: 1px solid var(--line);
+  font-size: 11.5px; color: var(--muted-2);
+}
+.cmdk-foot kbd {
+  font-family: 'Sora', sans-serif; font-size: 10.5px;
+  background: rgba(255, 255, 255, .06); border: 1px solid var(--line);
+  border-radius: 5px; padding: 2px 6px; margin-right: 5px;
+}
+.cmdk-empty { padding: 28px 14px; text-align: center; color: var(--muted-2); font-size: 14px; }
+
+/* ---------- SCROLL PROGRESS ---------- */
+.progress {
+  position: fixed; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--accent); transform-origin: left center;
+  transform: scaleX(0); z-index: 950;
+}

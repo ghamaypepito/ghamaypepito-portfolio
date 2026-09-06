@@ -1,0 +1,144 @@
+---
+import { SITE } from '@/content/site';
+import '@/styles/tokens.css';
+import '@/styles/fonts.css';
+import '@/styles/base.css';
+import '@/styles/sections.css';
+import '@/styles/enhancements.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL('/og.png', Astro.site).href;
+
+/* --- Structured data ------------------------------------------------------
+   Three graphs: who he is, what this page is, and the body of work. Search
+   engines and LLM crawlers both read these, and the ItemList is what lets the
+   38 projects surface as an entity rather than a wall of links. */
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${Astro.site}#person`,
+  name: SITE.fullName,
+  alternateName: SITE.name,
+  url: canonical,
+  email: `mailto:${SITE.email}`,
+  telephone: SITE.phone,
+  jobTitle: SITE.roles,
+  description: SITE.intro,
+  image: ogImage,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: SITE.locality,
+    addressRegion: SITE.region,
+    addressCountry: SITE.country,
+  },
+  sameAs: SITE.socials.map((s) => s.href),
+  knowsAbout: SITE.skills,
+  alumniOf: SITE.education.map((e) => ({
+    '@type': 'EducationalOrganization',
+    name: e.school,
+  })),
+  worksFor: SITE.experience
+    .filter((e) => e.period.includes('Present'))
+    .map((e) => ({ '@type': 'Organization', name: e.company })),
+};
+
+const profileLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  '@id': `${Astro.site}#page`,
+  url: canonical,
+  name: title,
+  description,
+  inLanguage: 'en',
+  mainEntity: { '@id': `${Astro.site}#person` },
+};
+
+const worksLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Selected works',
+  numberOfItems: SITE.projects.length,
+  itemListElement: SITE.projects.map((p, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: {
+      '@type': 'WebSite',
+      name: p.name,
+      url: `https://${p.url}`,
+      about: p.cat,
+      creator: { '@id': `${Astro.site}#person` },
+    },
+  })),
+};
+---
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta name="theme-color" content="#1b1f2b" />
+    <meta name="author" content={SITE.fullName} />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+
+    <meta property="og:type" content="profile" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_PH" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <link rel="preload" href="/fonts/sora-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/manrope-variable.woff2" as="font" type="font/woff2" crossorigin />
+
+    <script is:inline>
+      // Flipped before first paint so the no-script reveal fallback never
+      // flashes for anyone who does have scripting.
+      document.documentElement.classList.remove('no-js');
+    </script>
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(personLd)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(profileLd)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(worksLd)} />
+  </head>
+
+  <body>
+    <a class="skip" href="#top">Skip to content</a>
+    <div class="progress" aria-hidden="true"></div>
+
+    <slot />
+
+    <!-- Decorative pointer; hidden from assistive tech and from touch devices. -->
+    <div class="cursor" aria-hidden="true"><span class="cursor-label"></span></div>
+    <div class="cursor-dot" aria-hidden="true"></div>
+
+    <script>
+      import { initEnhancements } from '@/lib/reveal';
+      import { initCursor } from '@/lib/cursor';
+      initEnhancements();
+      initCursor();
+    </script>
+  </body>
+</html>

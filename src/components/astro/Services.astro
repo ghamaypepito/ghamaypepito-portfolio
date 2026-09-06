@@ -1,0 +1,22 @@
+---
+import Kicker from './Kicker.astro';
+import ServicesGrid from '../react/ServicesGrid';
+---
+<section class="band services" id="services" aria-labelledby="services-h">
+  <div class="wrap">
+    <div data-reveal>
+      <Kicker light>Services</Kicker>
+      <div class="services-head">
+        <h2 class="section-title" id="services-h">
+          What I do.<br /><span class="muted-h">Design, build, grow.</span>
+        </h2>
+        <p class="section-sub">
+          From the first wireframe to the campaign that fills the funnel — a full
+          digital stack under one roof.
+        </p>
+      </div>
+    </div>
+
+    <ServicesGrid client:visible />
+  </div>
+</section>

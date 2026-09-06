@@ -1,0 +1,24 @@
+---
+import { SITE } from '@/content/site';
+import Kicker from './Kicker.astro';
+import PortfolioGrid from '../react/PortfolioGrid';
+---
+<section class="band portfolio" id="work" aria-labelledby="work-h">
+  <div class="wrap">
+    <div class="port-head" data-reveal>
+      <div>
+        <Kicker light>Portfolio</Kicker>
+        <h2 class="section-title" id="work-h">
+          Selected works.<br />
+          <span class="muted-h">{SITE.projects.length} live projects.</span>
+        </h2>
+      </div>
+      <p class="section-sub port-sub">
+        A decade of websites, stores and brands shipped for clients across the
+        Philippines and beyond — every one of these is live.
+      </p>
+    </div>
+
+    <PortfolioGrid client:visible />
+  </div>
+</section>

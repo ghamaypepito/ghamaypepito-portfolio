@@ -1,0 +1,28 @@
+# Cloudflare Pages header rules.
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  # Everything is same-origin except the Resend call, which happens server-side
+  # in the Worker rather than in the page.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+
+# Fingerprinted build output can be cached forever.
+/_assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Screenshots and service imagery change only when regenerated.
+/shots/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/services/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/og.png
+  Cache-Control: public, max-age=86400

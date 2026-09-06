@@ -1,0 +1,22 @@
+---
+import { Image } from 'astro:assets';
+import { SITE } from '@/content/site';
+import Testimonials from '../react/Testimonials';
+import formal from '@/assets/portrait-formal.jpg';
+---
+<section class="band quotes" aria-label="Client feedback">
+  <div class="wrap quotes-grid">
+    <div class="quotes-left" data-reveal>
+      <figure class="quote-photo">
+        <Image
+          src={formal}
+          alt={`${SITE.fullName} at work`}
+          widths={[400, 800]}
+          sizes="(max-width: 980px) 320px, 400px"
+          loading="lazy"
+        />
+      </figure>
+    </div>
+    <Testimonials client:visible />
+  </div>
+</section>

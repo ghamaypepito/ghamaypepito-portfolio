@@ -1,0 +1,31 @@
+---
+import Base from '@/layouts/Base.astro';
+import Hero from '@/components/astro/Hero.astro';
+import Manifesto from '@/components/astro/Manifesto.astro';
+import Services from '@/components/astro/Services.astro';
+import Portfolio from '@/components/astro/Portfolio.astro';
+import Experience from '@/components/astro/Experience.astro';
+import Skills from '@/components/astro/Skills.astro';
+import Quotes from '@/components/astro/Quotes.astro';
+import Contact from '@/components/astro/Contact.astro';
+import Footer from '@/components/astro/Footer.astro';
+import FloatingNav from '@/components/react/FloatingNav';
+
+const title = 'Ghamay Pepito — Website Designer, Developer & Digital Marketer';
+const description =
+  "Portfolio of Emeterio 'Ghamay' Pepito III — Website Designer & Developer, Digital Marketing Manager and SEO Specialist based in Cebu City. 38 live projects across web design, e-commerce, branding and SEO.";
+---
+<Base title={title} description={description}>
+  <FloatingNav client:idle />
+  <main>
+    <Hero />
+    <Manifesto />
+    <Services />
+    <Portfolio />
+    <Experience />
+    <Skills />
+    <Quotes />
+    <Contact />
+  </main>
+  <Footer />
+</Base>

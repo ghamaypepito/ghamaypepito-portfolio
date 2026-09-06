@@ -1,0 +1,70 @@
+/* ============================================================================
+   Design tokens — ported verbatim from the Claude Design handoff, with one
+   deliberate change noted below.
+   ========================================================================== */
+:root {
+  --bg: #1b1f2b;          /* deepest */
+  --bg-2: #222838;        /* hero slate */
+  --panel: #262d3e;       /* card */
+  --panel-2: #2c3447;     /* lighter card */
+  --line: rgba(255, 255, 255, .08);
+  --line-strong: rgba(255, 255, 255, .16);
+  --accent: #f2b33d;      /* amber */
+  --accent-soft: rgba(242, 179, 61, .14);
+  --accent-glow: rgba(242, 179, 61, .38);
+  --ink: #1b1f2b;         /* text that sits on --accent */
+  --text: #f4f5f8;
+  --muted: #8a93a8;
+  /* Handoff value was #6c7488, which measures 4.1:1 on --bg — just under
+     WCAG AA for body text. Lifted to the nearest value that clears 4.5:1. */
+  --muted-2: #7a8296;
+  --ok: #3ddc97;
+  --err: #e2624a;
+
+  --maxw: 1240px;
+  --r: 18px;
+  --r-sm: 10px;
+  --gutter: 40px;
+
+  /* --- Motion -------------------------------------------------------------
+     Easing over duration. Every curve here is compositor-safe and tuned so
+     that interaction feedback lands under 200ms and entrances under 600ms. */
+  --ease-out-quart: cubic-bezier(.25, 1, .5, 1);
+  --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  /* A real spring, sampled — overshoots ~4% then settles. */
+  --ease-spring: linear(
+    0, .0039 1.7%, .0157 2.5%, .0625 5%, .1407 7.5%, .25 10.1%, .3906 12.9%,
+    .5625 16%, .7656 19.4%, .8907 21.5%, 1.0122 23.9%, 1.0641 25.4%,
+    1.0964 26.9%, 1.1088 28.5%, 1.1015 30.4%, 1.0748 32.6%, 1.0288 35.4%,
+    1.0011 37.4%, .9793 39.6%, .9629 42.2%, .9583 44%, .9598 46.2%,
+    .9711 50.5%, .9963 57.2%, 1.0092 61.5%, 1.0106 65.1%, 1.0025 73.4%,
+    .9992 80.6%, 1
+  );
+
+  --dur-fast: 160ms;
+  --dur-base: 240ms;
+  --dur-slow: 420ms;
+  --dur-reveal: 620ms;
+
+  color-scheme: dark;
+}
+
+/* One switch disables every non-essential animation on the site. Motion-One
+   islands read the same preference through `useReducedMotion()`. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0.01ms;
+    --dur-base: 0.01ms;
+    --dur-slow: 0.01ms;
+    --dur-reveal: 0.01ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
