@@ -6,6 +6,13 @@
  *   - reach for a spring before a duration, so gestures stay interruptible;
  *   - keep interaction feedback under 200ms and entrances under 600ms;
  *   - let `prefers-reduced-motion` remove motion, not functionality.
+ *
+ * One trap worth naming: never branch the animation *targets* on
+ * `useReducedMotion()`. That hook returns false on the first render and the
+ * real value after mount, so an element that starts at `opacity: 0` and whose
+ * target becomes `{}` is stranded invisible. Keep initial/animate constant and
+ * branch only the `transition` — reduced motion should mean "arrive instantly",
+ * never "never arrive".
  */
 import type { Transition } from 'motion/react';
 

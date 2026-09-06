@@ -116,8 +116,8 @@ export default function PortfolioGrid() {
         className="filters"
         role="tablist"
         aria-label="Filter projects by category"
-        initial={still ? false : { opacity: 0, y: 14, filter: 'blur(5px)' }}
-        whileInView={still ? {} : { opacity: 1, y: 0, filter: 'blur(0px)' }}
+        initial={{ opacity: 0, y: 14, filter: 'blur(5px)' }}
+        whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
         viewport={{ once: true, amount: 0.3 }}
         transition={still ? { duration: 0 } : { duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
       >
@@ -156,9 +156,9 @@ export default function PortfolioGrid() {
             <motion.div
               key={p.url}
               layout={!still}
-              initial={still ? false : enter.initial}
-              animate={still ? {} : enter.animate}
-              exit={still ? {} : enter.exit}
+              initial={enter.initial}
+              animate={enter.animate}
+              exit={enter.exit}
               transition={
                 still
                   ? { duration: 0 }

@@ -89,6 +89,38 @@ await page.waitForTimeout(900);
 checks.revealsTotal = await page.locator('[data-reveal]').count();
 checks.revealsShown = await page.locator('[data-reveal].is-in').count();
 
+/* Reduced-motion pass. The failure mode this guards against is an element
+   that starts hidden for an entrance animation and is never told to arrive,
+   leaving content permanently invisible for anyone who opts out of motion. */
+const still = await browser.newPage({
+  viewport: { width: 1440, height: 900 },
+  reducedMotion: 'reduce',
+});
+await still.goto(BASE, { waitUntil: 'networkidle' });
+await still.evaluate(async () => {
+  for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight) {
+    window.scrollTo(0, y);
+    await new Promise((r) => setTimeout(r, 80));
+  }
+});
+await still.waitForTimeout(1200);
+const stranded = await still.evaluate(() =>
+  [...document.querySelectorAll('main *')]
+    .filter((el) => {
+      const s = getComputedStyle(el);
+      return (
+        s.opacity === '0' &&
+        el.getBoundingClientRect().height > 20 &&
+        !el.closest('[aria-hidden="true"]')
+      );
+    })
+    .map((el) => String(el.className || el.tagName).slice(0, 40)),
+);
+checks.reducedMotionInvisible = stranded.length;
+checks.reducedMotionInvisibleSample = stranded.slice(0, 6);
+checks.reducedMotionCards = await still.locator('.proj').count();
+await still.close();
+
 // Mobile pass.
 const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true });
 await mobile.goto(BASE, { waitUntil: 'networkidle' });
@@ -118,6 +150,11 @@ expect('command palette searched projects', (checks.paletteResults ?? 0) >= 1);
 expect('every scroll reveal became visible', checks.revealsShown === checks.revealsTotal);
 expect('mobile layout does not scroll horizontally', checks.mobileOverflow === false);
 expect('no console errors', errors.length === 0);
+expect(
+  `nothing is stranded invisible under prefers-reduced-motion (${JSON.stringify(checks.reducedMotionInvisibleSample)})`,
+  checks.reducedMotionInvisible === 0,
+);
+expect('project cards render under reduced motion', checks.reducedMotionCards === 12);
 
 if (failures.length) {
   console.error(`\n${failures.length} check(s) failed:`);

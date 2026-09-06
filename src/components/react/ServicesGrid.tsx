@@ -23,8 +23,8 @@ export default function ServicesGrid() {
           onFocus={() => setOpen(i)}
           tabIndex={0}
           aria-label={`${sv.title.join(' ')} — ${sv.blurb}`}
-          initial={still ? false : { opacity: 0, y: 22, filter: 'blur(6px)' }}
-          whileInView={still ? {} : { opacity: 1, y: 0, filter: 'blur(0px)' }}
+          initial={{ opacity: 0, y: 22, filter: 'blur(6px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true, amount: 0.2 }}
           transition={
             still
