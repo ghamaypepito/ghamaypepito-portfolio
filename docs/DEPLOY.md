@@ -53,7 +53,7 @@ Or: dashboard → the Pages project → Settings → Environment variables → a
 
 ```
 CONTACT_FROM = Portfolio <hello@ghamaypepito.com>
-CONTACT_TO   = ghamaypepito@me.com
+CONTACT_TO   = ghamaypepito@gmail.com
 ```
 
 Until the domain is verified, leave `CONTACT_FROM` as the default

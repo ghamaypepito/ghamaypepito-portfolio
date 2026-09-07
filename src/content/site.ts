@@ -71,9 +71,9 @@ export const SITE = {
   taglineTail: 'based in Cebu City.',
   intro:
     'I craft and execute strategic digital campaigns that drive brand growth and engagement — blending design, development, and data to deliver results that matter.',
-  // NOTE(ghamay): confirm which inbox should receive enquiries. This address
-  // came from the design handoff; the contact Worker forwards here.
-  email: 'ghamaypepito@me.com',
+  // Confirmed inbox for enquiries. The contact Worker forwards here, and
+  // CONTACT_TO in wrangler.toml must match.
+  email: 'ghamaypepito@gmail.com',
   phone: '+63 908 897 8792',
   location: 'One Oasis, Kasambagan, Cebu City, Philippines',
   locality: 'Cebu City',
