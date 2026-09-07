@@ -110,9 +110,8 @@ await page.evaluate(() => {
   if (more) more.click();
 });
 await page.waitForTimeout(1200);
-checks.archivedCards = await page.locator('.proj--archived').count();
-checks.archivedThatAreLinks = await page.locator('a.proj--archived').count();
 checks.allCardsRendered = await page.locator('.proj').count();
+checks.cardsThatAreLinks = await page.locator('a.proj').count();
 
 // Filter interaction.
 await page.getByRole('tab', { name: /^E-Commerce/ }).click();
@@ -253,9 +252,8 @@ expect(
   checks.hiddenWithoutJs === 0,
 );
 expect('section headings render without JavaScript', checks.headingsWithoutJs >= 7);
-expect('every project card renders once expanded', checks.allCardsRendered === 38);
-expect('the nine retired projects are marked archived', checks.archivedCards === 9);
-expect('no archived project is a clickable link', checks.archivedThatAreLinks === 0);
+expect('every project card renders once expanded', checks.allCardsRendered === 29);
+expect('every project card links out', checks.cardsThatAreLinks === checks.allCardsRendered);
 
 if (failures.length) {
   console.error(`\n${failures.length} check(s) failed:`);

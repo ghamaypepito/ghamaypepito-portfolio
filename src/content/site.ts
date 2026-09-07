@@ -35,10 +35,8 @@ export type Testimonial = {
   name: string;
   title: string;
   /**
-   * Attribution is by role + company, not by named individual. Set to true
-   * only once a named, permission-granted quote replaces it — the UI reads
-   * this flag to decide whether to show an avatar initial or a neutral mark.
-   * TODO(ghamay): collect named testimonials and flip these to true.
+   * True once the quote is attributed to a named individual at a named
+   * company. Sourced from ghl.southsidestudio.ph.
    */
   verified: boolean;
 };
@@ -58,16 +56,6 @@ export type Project = {
   url: string;
   cat: ProjectCategory;
   tag: string;
-  /**
-   * 'archived' means the domain no longer serves the work — dead DNS, a host
-   * error page, or a "coming soon" splash. Those cards still appear (the work
-   * was still done) but they do not link anywhere, because sending a prospect
-   * to a 404 costs more than the extra logo is worth.
-   *
-   * Re-check any time with `node scripts/check-links.mjs` and
-   * `npm run shots`; restore a project by deleting its `status` line.
-   */
-  status?: 'archived';
 };
 
 export const SITE = {
@@ -99,7 +87,9 @@ export const SITE = {
 
   stats: [
     { value: 12, suffix: '+', label: ['Years of', 'Experience'] },
-    { value: 38, suffix: '', label: ['Projects', 'Delivered'] },
+    // Derived below from `projects.length` so the stat can never drift from
+    // what the grid actually shows.
+    { value: 0, suffix: '', label: ['Projects', 'Delivered'] },
     { value: 40, suffix: '+', label: ['Brands &', 'Partners'] },
   ] satisfies Stat[],
 
@@ -348,25 +338,22 @@ export const SITE = {
 
   testimonials: [
     {
-      quote:
-        'Ghamay rebuilt our entire web presence and our inbound leads doubled within a quarter. He thinks like a marketer and builds like an engineer.',
-      name: 'Operations Lead',
-      title: 'Servi-Tek Inc.',
-      verified: false,
+      quote: 'The follow-up happens whether I remember it or not.',
+      name: 'Randall Peña',
+      title: 'REMAX South & Main',
+      verified: true,
     },
     {
-      quote:
-        'From branding to automation, he handled it all. Reliable, fast, and genuinely invested in the outcome — exactly who you want running your digital.',
-      name: 'Founder',
-      title: 'PXLCODE Partner',
-      verified: false,
+      quote: 'System workflow works smooth from website to checkout.',
+      name: 'Dominic Reyes',
+      title: 'CEO, Zero Pest PH',
+      verified: true,
     },
     {
-      quote:
-        'Our online store finally feels premium. The design, the SEO, the speed — every detail was considered. Sales speak for themselves.',
-      name: 'Store Owner',
-      title: 'E-commerce Client',
-      verified: false,
+      quote: 'Email Campaigns, SMS and Bookings in Automation.',
+      name: 'Karren DiLeva',
+      title: 'Internal Benefit Advisors',
+      verified: true,
     },
   ] satisfies Testimonial[],
 
@@ -375,8 +362,6 @@ export const SITE = {
 
   projects: [
     { name: 'Outremer Catamaran', url: 'catamaran-outremer.com', cat: 'Web Design', tag: 'Marine · Web' },
-    { name: 'CaptainPanel', url: 'captainpanel.com', cat: 'Development', tag: 'SaaS · Platform' , status: 'archived' /* connection times out */ },
-    { name: 'Live Loud Worship', url: 'liveloudworship.com', cat: 'Web Design', tag: 'Community · Web' , status: 'archived' /* host error page */ },
     { name: 'AFSA Industries', url: 'afsaindustries.com', cat: 'Web Design', tag: 'Industrial · Corporate' },
     { name: 'Auxesis Review', url: 'auxesisreview.com', cat: 'Web Design', tag: 'Education · Review' },
     { name: 'Cebu Car Rentals', url: 'cebucarrentals.com', cat: 'SEO', tag: 'Travel · SEO' },
@@ -393,27 +378,24 @@ export const SITE = {
     { name: 'Ranyan', url: 'ranyan.com', cat: 'Web Design', tag: 'Business · Web' },
     { name: 'ANCOP Canada', url: 'ancopcanada.org', cat: 'Web Design', tag: 'Nonprofit · Web' },
     { name: 'Tibbs Law', url: 'tibbslaw.com', cat: 'Web Design', tag: 'Legal · Web' },
-    { name: 'Nathalie El Kouby', url: 'nathalieelkouby.com', cat: 'Web Design', tag: 'Personal · Web' , status: 'archived' /* DNS does not resolve */ },
     { name: 'Blend Academy', url: 'blendacademy.ph', cat: 'Web Design', tag: 'Education · LMS' },
-    { name: 'Blend Consultancy', url: 'blendconsultancy.com', cat: 'Branding', tag: 'Consulting · Brand' , status: 'archived' /* HTTP 500 */ },
-    { name: 'Sureway Consultancy', url: 'surewayconsultancy.com', cat: 'Web Design', tag: 'Consulting · Web' , status: 'archived' /* DNS does not resolve */ },
     { name: 'Philiear', url: 'philiear.ph', cat: 'Web Design', tag: 'Healthcare · Web' },
     { name: 'SEA Audiology Academy', url: 'seaaudiologyacademy.com', cat: 'Web Design', tag: 'Education · Academy' },
-    { name: 'YCloud', url: 'ycloud.ph', cat: 'Development', tag: 'Tech · Cloud' , status: 'archived' /* HTTP 404 */ },
-    { name: 'Cebu Travels', url: 'cebutravels.ph', cat: 'SEO', tag: 'Travel · SEO' , status: 'archived' /* "coming soon" placeholder */ },
     { name: 'Datum', url: 'datum.ph', cat: 'Development', tag: 'Tech · Data' },
     { name: 'Zero Pest PH', url: 'zeropestph.com', cat: 'SEO', tag: 'Services · SEO' },
     { name: 'Stitched by Mia', url: 'stitchedbymia.com', cat: 'E-Commerce', tag: 'Fashion · Shop' },
     { name: 'D-Tec', url: 'd-tec.asia', cat: 'Development', tag: 'Tech · Web' },
     { name: 'MAC', url: 'mac.ph', cat: 'Web Design', tag: 'Corporate · Web' },
-    { name: 'DRCDC', url: 'drcdc.com', cat: 'Web Design', tag: 'Healthcare · Web' , status: 'archived' /* DNS does not resolve */ },
     { name: 'Archon', url: 'archon.ph', cat: 'Branding', tag: 'Architecture · Brand' },
-    { name: 'BNI Manila CBD', url: 'bni-manilacbd.org', cat: 'Web Design', tag: 'Business · Network' , status: 'archived' /* DNS does not resolve */ },
     { name: 'Gee Air Security', url: 'geeairsecurity.com', cat: 'Web Design', tag: 'Security · Web' },
     { name: 'Go Solar Philippines', url: 'gosolarphilippines.com', cat: 'SEO', tag: 'Energy · SEO' },
     { name: 'Storij Modules', url: 'storijmodules.com', cat: 'Development', tag: 'Tech · Modular' },
   ] satisfies Project[],
 } as const;
+
+/* The "Projects Delivered" stat mirrors the portfolio rather than repeating a
+   number that has to be remembered. */
+(SITE.stats[1] as { value: number }).value = SITE.projects.length;
 
 export type SiteData = typeof SITE;
 
@@ -425,9 +407,6 @@ export function countFor(cat: string): number {
     ? SITE.projects.length
     : SITE.projects.filter((p) => p.cat === cat).length;
 }
-
-/** Projects whose sites are still up and safe to link to. */
-export const LIVE_PROJECTS = SITE.projects.filter((p) => p.status !== 'archived');
 
 /** Stable slug used for screenshot filenames. */
 export function slugFor(url: string): string {

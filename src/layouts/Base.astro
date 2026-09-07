@@ -1,5 +1,5 @@
 ---
-import { SITE, LIVE_PROJECTS } from '@/content/site';
+import { SITE } from '@/content/site';
 import '@/styles/tokens.css';
 import '@/styles/fonts.css';
 import '@/styles/base.css';
@@ -100,8 +100,8 @@ const worksLd = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
   name: 'Selected works',
-  numberOfItems: LIVE_PROJECTS.length,
-  itemListElement: LIVE_PROJECTS.map((p, i) => ({
+  numberOfItems: SITE.projects.length,
+  itemListElement: SITE.projects.map((p, i) => ({
     '@type': 'ListItem',
     position: i + 1,
     item: {
