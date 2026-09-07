@@ -95,7 +95,7 @@
   display: flex; flex-direction: column; justify-content: flex-start;
 }
 .hero-name {
-  font-size: clamp(56px, 8vw, 112px); font-weight: 800;
+  font-size: clamp(50px, 7vw, 96px); font-weight: 800;
   letter-spacing: -.04em; position: relative; z-index: 3;
 }
 .hero-name .hn { display: block; }
@@ -137,7 +137,7 @@
 
 .hero-portrait {
   position: absolute; right: -8px; bottom: 0;
-  width: min(420px, 46vw); height: 500px; z-index: 1;
+  width: min(470px, 50vw); height: 500px; z-index: 1;
   border-radius: 16px; overflow: hidden;
   filter: drop-shadow(0 30px 60px rgba(0, 0, 0, .45));
 }
@@ -145,7 +145,7 @@
 .hero-portrait::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background:
-    linear-gradient(100deg, rgba(27,31,43,.94) 0%, rgba(27,31,43,.86) 26%, rgba(27,31,43,.5) 48%, rgba(27,31,43,0) 66%),
+    linear-gradient(100deg, rgba(27,31,43,1) 0%, rgba(27,31,43,.97) 7%, rgba(27,31,43,.72) 20%, rgba(27,31,43,.34) 33%, rgba(27,31,43,0) 47%),
     linear-gradient(180deg, transparent 55%, rgba(34,40,56,.55));
 }
 
