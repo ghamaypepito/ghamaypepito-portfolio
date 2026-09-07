@@ -155,6 +155,18 @@ Animation follows a small set of rules, encoded in
 Every island calls `useReducedMotion()` and collapses to instant transitions;
 the CSS layer has a matching `@media (prefers-reduced-motion: reduce)` block.
 
+**Entrances live in CSS, not in the islands.** Islands hydrate on
+`client:visible`, so an entrance animation inside a component renders its
+hidden state into the SSR HTML — and the content then depends on hydration to
+become visible. A fast scroll, a slow device or a JS failure leaves it blank.
+
+So: static wrappers carry `data-reveal` / `data-reveal-kids` and
+`src/lib/reveal.ts` owns them, with a `.no-js` fallback and a scroll-time
+safety sweep that rescues anything the IntersectionObserver missed. Islands
+animate only what is genuinely interactive — layout pills, drag, press, exit.
+`scripts/verify.mjs` asserts that nothing in `<main>` is invisible with
+JavaScript disabled, and nothing is stranded under reduced motion.
+
 ---
 
 ## Accessibility

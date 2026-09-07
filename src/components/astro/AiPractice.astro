@@ -33,7 +33,9 @@ const { ai } = SITE;
 
     <div class="ai-toolkit">
       <h3 class="ai-toolkit-label" data-reveal>The toolkit underneath</h3>
-      <ModelToolkit client:visible />
+      <div data-reveal data-reveal-kids>
+        <ModelToolkit client:visible />
+      </div>
       <p class="ai-footnote" data-reveal>{ai.footnote}</p>
     </div>
   </div>

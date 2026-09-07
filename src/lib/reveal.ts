@@ -21,30 +21,77 @@ function initReveals(): void {
     return;
   }
 
+  const show = (el: HTMLElement, stagger: boolean) => {
+    if (el.classList.contains('is-in')) return;
+    // Elements sharing a `data-reveal-group` rise as a staggered run — but
+    // only when they arrive normally. Anything caught by the safety sweep
+    // below has already been scrolled past and should just appear.
+    const group = el.dataset.revealGroup;
+    if (stagger && group) {
+      const peers = [
+        ...document.querySelectorAll<HTMLElement>(`[data-reveal-group="${group}"]`),
+      ];
+      const i = peers.indexOf(el);
+      el.style.setProperty('--reveal-delay', `${Math.min(i * 60, 360)}ms`);
+    }
+    el.classList.add('is-in');
+  };
+
   const io = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
         const el = entry.target as HTMLElement;
-        // Elements sharing a `data-reveal-group` rise as a staggered run.
-        const group = el.dataset.revealGroup;
-        if (group) {
-          const peers = [
-            ...document.querySelectorAll<HTMLElement>(
-              `[data-reveal-group="${group}"]`,
-            ),
-          ];
-          const i = peers.indexOf(el);
-          el.style.setProperty('--reveal-delay', `${Math.min(i * 60, 360)}ms`);
-        }
-        el.classList.add('is-in');
+        show(el, true);
         io.unobserve(el);
       }
     },
-    { threshold: 0.15, rootMargin: '0px 0px -8% 0px' },
+    // A zero threshold means a single visible pixel is enough. Requiring a
+    // percentage of the element loses tall elements on a fast scroll.
+    { threshold: 0, rootMargin: '0px 0px -6% 0px' },
   );
 
   targets.forEach((el) => io.observe(el));
+
+  /**
+   * Safety net. IntersectionObserver samples frames, so a hard flick-scroll —
+   * or a slow machine — can carry an element past the viewport without a
+   * callback ever firing, stranding it invisible.
+   *
+   * The threshold matters. The observer fires as an element's top crosses the
+   * bottom of the viewport, so sweeping anything already a third of the way up
+   * the screen only ever catches elements the observer genuinely missed. Sweep
+   * on first contact instead and it wins every race, and the staggered
+   * entrance never runs at all.
+   */
+  const SWEEP_LINE = 0.35;
+  let queued = false;
+  const sweep = () => {
+    queued = false;
+    let remaining = 0;
+    for (const el of targets) {
+      if (el.classList.contains('is-in')) continue;
+      remaining += 1;
+      if (el.getBoundingClientRect().top < window.innerHeight * SWEEP_LINE) {
+        show(el, false);
+        io.unobserve(el);
+      }
+    }
+    if (remaining === 0) {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    }
+  };
+  const onScroll = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(sweep);
+  };
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  // Catch anything already on screen at load, including after a hash jump.
+  requestAnimationFrame(sweep);
 }
 
 function initTimelineProgress(): void {

@@ -285,3 +285,9 @@
   .apps-rail { padding: 6px; }
   .rail-btn { padding: 18px 10px; gap: 14px; }
 }
+
+/* The contact form host stands in for `.contact-right` as the grid child. */
+.contact-right-host { display: flex; min-width: 0; }
+.contact-right-host > .contact-right { flex: 1; }
+/* The rail host must not add a second panel around the rail itself. */
+.apps-rail[data-reveal-kids] > * { display: block; }

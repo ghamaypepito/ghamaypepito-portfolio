@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { SITE } from '@/content/site';
-import { springSoft, stagger } from '@/lib/motion';
+import { springSoft } from '@/lib/motion';
 
 /**
  * The four-step delivery process. One step is expanded at a time; the amber
@@ -18,17 +18,9 @@ export default function ProcessRail() {
       {steps.map((s, i) => {
         const isActive = i === active;
         return (
-          <motion.li
+          <li
             key={s.step}
-            className={'rail-item' + (isActive ? ' is-active' : '')}
-            initial={{ opacity: 0, x: 18, filter: 'blur(5px)' }}
-            whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={
-              still
-                ? { duration: 0 }
-                : { duration: 0.5, ease: [0.25, 1, 0.5, 1], delay: stagger(i, 0.07, 0.3) }
-            }
+            className={'rail-item reveal-child' + (isActive ? ' is-active' : '')}
           >
             <button
               type="button"
@@ -65,7 +57,7 @@ export default function ProcessRail() {
                 </motion.span>
               </span>
             </button>
-          </motion.li>
+          </li>
         );
       })}
     </ol>

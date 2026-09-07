@@ -13,6 +13,13 @@
  * target becomes `{}` is stranded invisible. Keep initial/animate constant and
  * branch only the `transition` — reduced motion should mean "arrive instantly",
  * never "never arrive".
+ *
+ * A second trap, same consequence: do not give an island's entrance a
+ * `whileInView` with `once: true`. These components hydrate on
+ * `client:visible`, so if someone scrolls past before hydration finishes — a
+ * flick-scroll, or any slow device — the element mounts already out of view,
+ * the viewport observer never fires, and it stays at `opacity: 0` for good.
+ * Mounting *is* the in-view signal. Use plain `initial` -> `animate`.
  */
 import type { Transition } from 'motion/react';
 

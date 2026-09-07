@@ -112,15 +112,7 @@ export default function PortfolioGrid() {
 
   return (
     <>
-      <motion.div
-        className="filters"
-        role="tablist"
-        aria-label="Filter projects by category"
-        initial={{ opacity: 0, y: 14, filter: 'blur(5px)' }}
-        whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={still ? { duration: 0 } : { duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
-      >
+      <div className="filters" role="tablist" aria-label="Filter projects by category">
         <LayoutGroup id="filters">
           {CATEGORIES.map((c) => (
             <button
@@ -144,7 +136,7 @@ export default function PortfolioGrid() {
             </button>
           ))}
         </LayoutGroup>
-      </motion.div>
+      </div>
 
       <p className="sr-only" role="status" aria-live="polite">
         Showing {shown.length} of {list.length} {filter === 'All' ? 'projects' : `${filter} projects`}.

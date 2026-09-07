@@ -163,3 +163,38 @@
   background: var(--accent); transform-origin: left center;
   transform: scaleX(0); z-index: 950;
 }
+
+/* ---------- STAGGERED ENTRANCES FOR ISLAND CONTENT ----------
+   Islands hydrate on `client:visible`. If the entrance lived inside the
+   component, motion would render the hidden state into the SSR HTML and the
+   content would depend on hydration to become visible — so a fast scroll, a
+   slow device, or a JS failure leaves it blank.
+
+   Instead the wrapper is static markup that reveal.ts owns (with its safety
+   sweep and `.no-js` fallback), and the children are staggered here in CSS.
+   The island then only animates what is genuinely interactive.
+
+   Children are matched by `.reveal-child`, not by depth: Astro puts an
+   <astro-island> element between the wrapper and the component's own root, so
+   a child-combinator chain counts the wrong levels. */
+[data-reveal-kids] .reveal-child {
+  opacity: 0;
+  transform: translateY(22px);
+  filter: blur(6px);
+  transition:
+    opacity var(--dur-reveal) var(--ease-out-quart),
+    transform var(--dur-reveal) var(--ease-out-expo),
+    filter var(--dur-reveal) var(--ease-out-quart);
+}
+[data-reveal-kids].is-in .reveal-child { opacity: 1; transform: none; filter: blur(0); }
+[data-reveal-kids].is-in .reveal-child:nth-child(1) { transition-delay: 0ms; }
+[data-reveal-kids].is-in .reveal-child:nth-child(2) { transition-delay: 70ms; }
+[data-reveal-kids].is-in .reveal-child:nth-child(3) { transition-delay: 140ms; }
+[data-reveal-kids].is-in .reveal-child:nth-child(4) { transition-delay: 210ms; }
+[data-reveal-kids].is-in .reveal-child:nth-child(n + 5) { transition-delay: 280ms; }
+
+/* Never let the entrance be the reason content cannot be read. */
+.no-js [data-reveal-kids] .reveal-child { opacity: 1; transform: none; filter: none; }
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal-kids] .reveal-child { opacity: 1; transform: none; filter: none; }
+}

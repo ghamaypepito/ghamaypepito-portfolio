@@ -64,13 +64,7 @@ export default function ContactForm() {
   }
 
   return (
-    <motion.div
-      className="contact-right"
-      initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
-      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={still ? { duration: 0 } : { duration: 0.55, ease: [0.25, 1, 0.5, 1] }}
-    >
+    <div className="contact-right">
       <div className="form-head">
         Estimate your project? <em>Let me know here.</em>
       </div>
@@ -197,6 +191,6 @@ export default function ContactForm() {
           </motion.form>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }

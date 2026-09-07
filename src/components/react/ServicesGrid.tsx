@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { SITE } from '@/content/site';
-import { springSoft, stagger } from '@/lib/motion';
+import { springSoft } from '@/lib/motion';
 import Icon from './Icon';
 
 /**
@@ -16,21 +16,13 @@ export default function ServicesGrid() {
   return (
     <div className="svc-grid" onMouseLeave={() => setOpen(0)}>
       {SITE.services.map((sv, i) => (
-        <motion.article
+        <article
           key={sv.key}
-          className={'svc-card' + (open === i ? ' is-open' : '')}
+          className={'svc-card reveal-child' + (open === i ? ' is-open' : '')}
           onMouseEnter={() => setOpen(i)}
           onFocus={() => setOpen(i)}
           tabIndex={0}
           aria-label={`${sv.title.join(' ')} — ${sv.blurb}`}
-          initial={{ opacity: 0, y: 22, filter: 'blur(6px)' }}
-          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={
-            still
-              ? { duration: 0 }
-              : { duration: 0.55, ease: [0.25, 1, 0.5, 1], delay: stagger(i, 0.08, 0.32) }
-          }
         >
           {open === i && (
             <motion.span
@@ -61,7 +53,7 @@ export default function ServicesGrid() {
             {sv.tools.map((t) => <span key={t} className="chip">{t}</span>)}
           </div>
           <span className="svc-num" aria-hidden="true">0{i + 1}</span>
-        </motion.article>
+        </article>
       ))}
     </div>
   );

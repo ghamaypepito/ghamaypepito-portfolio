@@ -157,6 +157,33 @@ checks.reducedMotionInvisibleSample = stranded.slice(0, 6);
 checks.reducedMotionCards = await still.locator('.proj').count();
 await still.close();
 
+/* No-JavaScript pass. Nothing on the page should depend on hydration to
+   become visible — that is the failure mode behind both reveal bugs so far.
+   Decorative hover affordances and the honeypot are legitimately hidden. */
+const noJs = await browser.newContext({
+  viewport: { width: 1440, height: 900 },
+  javaScriptEnabled: false,
+});
+const noJsPage = await noJs.newPage();
+await noJsPage.goto(BASE, { waitUntil: 'load' });
+const hiddenWithoutJs = await noJsPage.$$eval('main *', (els) =>
+  els
+    .filter((el) => {
+      const s = getComputedStyle(el);
+      if (s.opacity !== '0') return false;
+      if (el.getBoundingClientRect().height <= 20) return false;
+      // Hover-only affordances and the spam honeypot are hidden on purpose.
+      if (el.closest('[aria-hidden="true"]')) return false;
+      if (el.classList.contains('proj-go') || el.classList.contains('hp')) return false;
+      return true;
+    })
+    .map((el) => String(el.className || el.tagName).slice(0, 40)),
+);
+checks.hiddenWithoutJs = hiddenWithoutJs.length;
+checks.hiddenWithoutJsSample = hiddenWithoutJs.slice(0, 6);
+checks.headingsWithoutJs = await noJsPage.locator('main h2').count();
+await noJs.close();
+
 // Mobile pass.
 const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true });
 await mobile.goto(BASE, { waitUntil: 'networkidle' });
@@ -199,6 +226,11 @@ expect(
   checks.reducedMotionInvisible === 0,
 );
 expect('project cards render under reduced motion', checks.reducedMotionCards === 12);
+expect(
+  `nothing depends on JavaScript to become visible (${JSON.stringify(checks.hiddenWithoutJsSample)})`,
+  checks.hiddenWithoutJs === 0,
+);
+expect('section headings render without JavaScript', checks.headingsWithoutJs >= 7);
 
 if (failures.length) {
   console.error(`\n${failures.length} check(s) failed:`);

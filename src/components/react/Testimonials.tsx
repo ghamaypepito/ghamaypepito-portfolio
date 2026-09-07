@@ -54,7 +54,10 @@ export default function Testimonials() {
       <span className="quote-mark"><Icon name="quote" size={42} /></span>
 
       <div aria-live="polite" aria-atomic="true">
-        <AnimatePresence mode="wait">
+        {/* `initial={false}` keeps the first quote out of the entrance
+            animation, so it is server-rendered visible rather than at
+            opacity 0 waiting for hydration. Later changes still animate. */}
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={index}
             drag={still ? false : 'x'}
