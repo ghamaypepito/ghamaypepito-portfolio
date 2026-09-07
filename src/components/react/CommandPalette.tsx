@@ -84,14 +84,16 @@ export default function CommandPalette({
       })),
     ];
 
-    const work: Command[] = SITE.projects.map((p) => ({
-      id: `proj-${p.url}`,
-      label: p.name,
-      hint: p.cat,
-      group: 'Open a project',
-      icon: 'arrowUpRight',
-      run: () => window.open(`https://${p.url}`, '_blank', 'noopener,noreferrer'),
-    }));
+    const work: Command[] = SITE.projects
+      .filter((p) => p.status !== 'archived')
+      .map((p) => ({
+        id: `proj-${p.url}`,
+        label: p.name,
+        hint: p.cat,
+        group: 'Open a project',
+        icon: 'arrowUpRight' as IconName,
+        run: () => window.open(`https://${p.url}`, '_blank', 'noopener,noreferrer'),
+      }));
 
     return [...jump, ...reach, ...work];
   }, []);

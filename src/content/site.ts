@@ -58,6 +58,16 @@ export type Project = {
   url: string;
   cat: ProjectCategory;
   tag: string;
+  /**
+   * 'archived' means the domain no longer serves the work — dead DNS, a host
+   * error page, or a "coming soon" splash. Those cards still appear (the work
+   * was still done) but they do not link anywhere, because sending a prospect
+   * to a 404 costs more than the extra logo is worth.
+   *
+   * Re-check any time with `node scripts/check-links.mjs` and
+   * `npm run shots`; restore a project by deleting its `status` line.
+   */
+  status?: 'archived';
 };
 
 export const SITE = {
@@ -365,8 +375,8 @@ export const SITE = {
 
   projects: [
     { name: 'Outremer Catamaran', url: 'catamaran-outremer.com', cat: 'Web Design', tag: 'Marine · Web' },
-    { name: 'CaptainPanel', url: 'captainpanel.com', cat: 'Development', tag: 'SaaS · Platform' },
-    { name: 'Live Loud Worship', url: 'liveloudworship.com', cat: 'Web Design', tag: 'Community · Web' },
+    { name: 'CaptainPanel', url: 'captainpanel.com', cat: 'Development', tag: 'SaaS · Platform' , status: 'archived' /* connection times out */ },
+    { name: 'Live Loud Worship', url: 'liveloudworship.com', cat: 'Web Design', tag: 'Community · Web' , status: 'archived' /* host error page */ },
     { name: 'AFSA Industries', url: 'afsaindustries.com', cat: 'Web Design', tag: 'Industrial · Corporate' },
     { name: 'Auxesis Review', url: 'auxesisreview.com', cat: 'Web Design', tag: 'Education · Review' },
     { name: 'Cebu Car Rentals', url: 'cebucarrentals.com', cat: 'SEO', tag: 'Travel · SEO' },
@@ -383,22 +393,22 @@ export const SITE = {
     { name: 'Ranyan', url: 'ranyan.com', cat: 'Web Design', tag: 'Business · Web' },
     { name: 'ANCOP Canada', url: 'ancopcanada.org', cat: 'Web Design', tag: 'Nonprofit · Web' },
     { name: 'Tibbs Law', url: 'tibbslaw.com', cat: 'Web Design', tag: 'Legal · Web' },
-    { name: 'Nathalie El Kouby', url: 'nathalieelkouby.com', cat: 'Web Design', tag: 'Personal · Web' },
+    { name: 'Nathalie El Kouby', url: 'nathalieelkouby.com', cat: 'Web Design', tag: 'Personal · Web' , status: 'archived' /* DNS does not resolve */ },
     { name: 'Blend Academy', url: 'blendacademy.ph', cat: 'Web Design', tag: 'Education · LMS' },
-    { name: 'Blend Consultancy', url: 'blendconsultancy.com', cat: 'Branding', tag: 'Consulting · Brand' },
-    { name: 'Sureway Consultancy', url: 'surewayconsultancy.com', cat: 'Web Design', tag: 'Consulting · Web' },
+    { name: 'Blend Consultancy', url: 'blendconsultancy.com', cat: 'Branding', tag: 'Consulting · Brand' , status: 'archived' /* HTTP 500 */ },
+    { name: 'Sureway Consultancy', url: 'surewayconsultancy.com', cat: 'Web Design', tag: 'Consulting · Web' , status: 'archived' /* DNS does not resolve */ },
     { name: 'Philiear', url: 'philiear.ph', cat: 'Web Design', tag: 'Healthcare · Web' },
     { name: 'SEA Audiology Academy', url: 'seaaudiologyacademy.com', cat: 'Web Design', tag: 'Education · Academy' },
-    { name: 'YCloud', url: 'ycloud.ph', cat: 'Development', tag: 'Tech · Cloud' },
-    { name: 'Cebu Travels', url: 'cebutravels.ph', cat: 'SEO', tag: 'Travel · SEO' },
+    { name: 'YCloud', url: 'ycloud.ph', cat: 'Development', tag: 'Tech · Cloud' , status: 'archived' /* HTTP 404 */ },
+    { name: 'Cebu Travels', url: 'cebutravels.ph', cat: 'SEO', tag: 'Travel · SEO' , status: 'archived' /* "coming soon" placeholder */ },
     { name: 'Datum', url: 'datum.ph', cat: 'Development', tag: 'Tech · Data' },
     { name: 'Zero Pest PH', url: 'zeropestph.com', cat: 'SEO', tag: 'Services · SEO' },
     { name: 'Stitched by Mia', url: 'stitchedbymia.com', cat: 'E-Commerce', tag: 'Fashion · Shop' },
     { name: 'D-Tec', url: 'd-tec.asia', cat: 'Development', tag: 'Tech · Web' },
     { name: 'MAC', url: 'mac.ph', cat: 'Web Design', tag: 'Corporate · Web' },
-    { name: 'DRCDC', url: 'drcdc.com', cat: 'Web Design', tag: 'Healthcare · Web' },
+    { name: 'DRCDC', url: 'drcdc.com', cat: 'Web Design', tag: 'Healthcare · Web' , status: 'archived' /* DNS does not resolve */ },
     { name: 'Archon', url: 'archon.ph', cat: 'Branding', tag: 'Architecture · Brand' },
-    { name: 'BNI Manila CBD', url: 'bni-manilacbd.org', cat: 'Web Design', tag: 'Business · Network' },
+    { name: 'BNI Manila CBD', url: 'bni-manilacbd.org', cat: 'Web Design', tag: 'Business · Network' , status: 'archived' /* DNS does not resolve */ },
     { name: 'Gee Air Security', url: 'geeairsecurity.com', cat: 'Web Design', tag: 'Security · Web' },
     { name: 'Go Solar Philippines', url: 'gosolarphilippines.com', cat: 'SEO', tag: 'Energy · SEO' },
     { name: 'Storij Modules', url: 'storijmodules.com', cat: 'Development', tag: 'Tech · Modular' },
@@ -415,6 +425,9 @@ export function countFor(cat: string): number {
     ? SITE.projects.length
     : SITE.projects.filter((p) => p.cat === cat).length;
 }
+
+/** Projects whose sites are still up and safe to link to. */
+export const LIVE_PROJECTS = SITE.projects.filter((p) => p.status !== 'archived');
 
 /** Stable slug used for screenshot filenames. */
 export function slugFor(url: string): string {

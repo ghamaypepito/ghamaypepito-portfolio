@@ -655,3 +655,14 @@
   background: rgba(255, 255, 255, .06); border: 1px solid var(--line);
   border-radius: 5px; padding: 2px 6px;
 }
+
+/* An archived project keeps its place in the grid but is not interactive. */
+.proj--archived { cursor: default; }
+.proj--archived:hover { transform: none; border-color: var(--line); }
+.proj--archived .bw-view img,
+.proj--archived .bw-fallback { filter: saturate(.35) brightness(.82); }
+.proj-ext--archived {
+  font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 600;
+  color: var(--muted-2); letter-spacing: .02em;
+  border: 1px solid var(--line); border-radius: 7px; padding: 4px 9px;
+}

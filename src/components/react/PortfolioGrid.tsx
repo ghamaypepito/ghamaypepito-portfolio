@@ -20,6 +20,7 @@ function initialsOf(name: string): string {
 }
 
 function ProjectCard({ p, featured }: { p: Project; featured: boolean }) {
+  const archived = p.status === 'archived';
   const slug = slugFor(p.url);
   const shot = SHOTS[slug];
   const viewRef = useRef<HTMLDivElement>(null);
@@ -46,14 +47,25 @@ function ProjectCard({ p, featured }: { p: Project; featured: boolean }) {
     return () => ro.disconnect();
   }, [slug]);
 
+  // An archived card is deliberately not a link — there is nothing at the
+  // other end, and a dead link reads worse than an honest label.
+  const Tag = archived ? 'div' : 'a';
+  const linkProps = archived
+    ? {}
+    : {
+        href: `https://${p.url}`,
+        target: '_blank',
+        rel: 'noreferrer noopener',
+        'data-cursor': 'Visit ↗',
+        'aria-label': `${p.name} — ${p.tag}. Opens ${p.url} in a new tab.`,
+      };
+
   return (
-    <a
-      className={'proj' + (featured ? ' proj--feat' : '')}
-      href={`https://${p.url}`}
-      target="_blank"
-      rel="noreferrer noopener"
-      data-cursor="Visit ↗"
-      aria-label={`${p.name} — ${p.tag}. Opens ${p.url} in a new tab.`}
+    <Tag
+      className={
+        'proj' + (featured ? ' proj--feat' : '') + (archived ? ' proj--archived' : '')
+      }
+      {...linkProps}
     >
       <div className="proj-thumb">
         <div className="bw">
@@ -76,7 +88,9 @@ function ProjectCard({ p, featured }: { p: Project; featured: boolean }) {
             <div className="bw-fallback" aria-hidden="true">{initialsOf(p.name)}</div>
           )}
         </div>
-        <span className="proj-go" aria-hidden="true"><Icon name="arrowUpRight" size={18} /></span>
+        {!archived && (
+          <span className="proj-go" aria-hidden="true"><Icon name="arrowUpRight" size={18} /></span>
+        )}
       </div>
 
       <div className="proj-meta">
@@ -85,9 +99,13 @@ function ProjectCard({ p, featured }: { p: Project; featured: boolean }) {
       </div>
       <div className="proj-foot">
         <span className="proj-cat">{p.cat}</span>
-        <span className="proj-ext" aria-hidden="true">Visit site <i>↗</i></span>
+        {archived ? (
+          <span className="proj-ext proj-ext--archived">Site retired</span>
+        ) : (
+          <span className="proj-ext" aria-hidden="true">Visit site <i>↗</i></span>
+        )}
       </div>
-    </a>
+    </Tag>
   );
 }
 

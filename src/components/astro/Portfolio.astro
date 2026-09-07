@@ -1,5 +1,5 @@
 ---
-import { SITE } from '@/content/site';
+import { SITE, LIVE_PROJECTS } from '@/content/site';
 import Kicker from './Kicker.astro';
 import PortfolioGrid from '../react/PortfolioGrid';
 ---
@@ -10,7 +10,7 @@ import PortfolioGrid from '../react/PortfolioGrid';
         <Kicker light>Portfolio</Kicker>
         <h2 class="section-title" id="work-h">
           Selected works.<br />
-          <span class="muted-h">{SITE.projects.length} live projects.</span>
+          <span class="muted-h">{LIVE_PROJECTS.length} live, {SITE.projects.length} shipped.</span>
         </h2>
       </div>
       <p class="section-sub port-sub">

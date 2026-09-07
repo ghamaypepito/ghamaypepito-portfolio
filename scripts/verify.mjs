@@ -92,6 +92,28 @@ checks.modelSwitches = await page.locator('.model').nth(2).evaluate((el) =>
 checks.aiOutcomeCards = await page.locator('.ai-card').count();
 checks.ghlFeatures = await page.locator('.ghl-feature').count();
 
+/* Archived projects must never render as links. */
+await page.evaluate(() => window.scrollTo(0, document.querySelector('#work').offsetTop));
+await page.waitForTimeout(1000);
+await page.evaluate(() => {
+  const more = document.querySelector('.btn-more');
+  if (more) more.click();
+});
+await page.waitForTimeout(900);
+await page.evaluate(() => {
+  const more = document.querySelector('.btn-more');
+  if (more) more.click();
+});
+await page.waitForTimeout(900);
+await page.evaluate(() => {
+  const more = document.querySelector('.btn-more');
+  if (more) more.click();
+});
+await page.waitForTimeout(1200);
+checks.archivedCards = await page.locator('.proj--archived').count();
+checks.archivedThatAreLinks = await page.locator('a.proj--archived').count();
+checks.allCardsRendered = await page.locator('.proj').count();
+
 // Filter interaction.
 await page.getByRole('tab', { name: /^E-Commerce/ }).click();
 await page.waitForTimeout(900);
@@ -231,6 +253,9 @@ expect(
   checks.hiddenWithoutJs === 0,
 );
 expect('section headings render without JavaScript', checks.headingsWithoutJs >= 7);
+expect('every project card renders once expanded', checks.allCardsRendered === 38);
+expect('the nine retired projects are marked archived', checks.archivedCards === 9);
+expect('no archived project is a clickable link', checks.archivedThatAreLinks === 0);
 
 if (failures.length) {
   console.error(`\n${failures.length} check(s) failed:`);
