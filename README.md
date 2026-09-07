@@ -183,8 +183,14 @@ JavaScript disabled, and nothing is stranded under reduced motion.
 
 ## Deployment
 
-See **[docs/DEPLOY.md](docs/DEPLOY.md)** for the full Cloudflare Pages runbook,
-including the DNS cutover and the one secret the contact form needs.
+**Live at https://ghamaypepito.com** on Cloudflare Pages.
+
+See **[docs/DEPLOY.md](docs/DEPLOY.md)** for the deploy commands, the current
+state of DNS and email, and the steps still outstanding — including the one
+secret the contact form needs before it can deliver anything.
+
+Two rules worth knowing before touching Cloudflare: the mail records must stay
+`DNS only`, and Rocket Loader must stay off or island hydration breaks.
 
 ## Credits
 
