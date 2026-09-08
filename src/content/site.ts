@@ -144,13 +144,12 @@ export const SITE = {
 
 
   /* ---------------------------------------------------------------------
-     Web application development.
-     TODO(ghamay): `bookingUrl` is a placeholder pointing at the GoHighLevel
-     portal root. Replace it with the exact calendar URL once you have it —
-     it is the only place the discovery-call CTA is defined.
+     Web application development. `bookingUrl` is the live GoHighLevel
+     booking widget and is the only place the discovery-call CTA is defined.
      ------------------------------------------------------------------- */
   webapp: {
-    bookingUrl: 'https://ghl.southsidestudio.ph',
+    bookingUrl:
+      'https://api.leadconnectorhq.com/widget/bookings/bookwithuswebdesign-22d4e697-2330-4cb7-bac0-00161989ead0',
     bookingLabel: 'Book a discovery call',
     title: ['Beyond the', 'brochure site.'],
     lead: 'Some problems do not fit a page and a contact form. When a business needs something that logs in, calculates, schedules or syncs, I build the application for it.',

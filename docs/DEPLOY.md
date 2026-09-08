@@ -137,24 +137,12 @@ sending *as* `@ghamaypepito.com` needs Gmail's "Send mail as" configured with
 an SMTP relay. If you want real two-way mailboxes, Google Workspace or Zoho is
 the right tool instead.
 
-### D. GoHighLevel discovery-call calendar
+### D. GoHighLevel discovery-call calendar — done
 
-Sub-account **Ghamay Pepito Web Services** (`U0WjaAXSrZWb7f0s885G`) →
-Settings → Calendars → **+ New calendar**. Opening the dialog is not enough;
-the form has to be filled in and saved.
+The calendar exists and the "Book a discovery call" CTA points at it.
 
-Suggested: Event calendar, "Discovery Call", 20 minutes, slug
-`discovery-call`, Asia/Manila, 15-minute buffer after.
-
-Then set the booking link in `src/content/site.ts`:
-
-```ts
-webapp: {
-  bookingUrl: 'https://<your-calendar-link>',
-```
-
-It currently points at the GoHighLevel portal root as a placeholder, which
-works but drops people on the front door instead of a booking slot.
+The booking link is wired in `src/content/site.ts` as `webapp.bookingUrl`
+and points at the live GoHighLevel booking widget.
 
 For `book.ghamaypepito.com`, add the CNAME GoHighLevel gives you as a
 `DNS only` record in Cloudflare, then set it as the calendar's custom domain.

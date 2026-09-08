@@ -65,8 +65,13 @@ checks.sectionsPresent = await page.evaluate(() =>
     .filter((id) => document.getElementById(id)).length,
 );
 checks.navItems = await page.locator('.nav-links a').count();
-checks.bookingLinks = await page.evaluate(
+// The two outbound CTAs are distinct destinations and are checked separately,
+// so swapping one cannot silently pass because the other still matches.
+checks.portalLinks = await page.evaluate(
   () => [...document.querySelectorAll('a[href*="ghl.southsidestudio.ph"]')].length,
+);
+checks.bookingLinks = await page.evaluate(
+  () => [...document.querySelectorAll('a[href*="leadconnectorhq.com/widget/bookings/"]')].length,
 );
 checks.externalLinksSafe = await page.evaluate(() =>
   [...document.querySelectorAll('a[target="_blank"]')].every((a) =>
@@ -236,7 +241,8 @@ expect('mobile layout does not scroll horizontally', checks.mobileOverflow === f
 expect('no console errors', errors.length === 0);
 expect('all seven page sections are present', checks.sectionsPresent === 7);
 expect('the nav lists six destinations', checks.navItems === 6);
-expect('the GoHighLevel and booking links are wired', checks.bookingLinks >= 3);
+expect('the GoHighLevel portal links are wired', checks.portalLinks >= 2);
+expect('the discovery-call booking link is wired', checks.bookingLinks >= 1);
 expect('every external link carries rel=noopener', checks.externalLinksSafe === true);
 expect('the delivery rail expands a step', checks.railExpandsOnClick === true);
 expect('the model toolkit switches', checks.modelSwitches === true);
