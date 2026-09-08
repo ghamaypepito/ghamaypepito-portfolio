@@ -16,7 +16,7 @@ Live state, everyday commands, and the steps that are still outstanding.
 | Nameservers | `archer.ns.cloudflare.com`, `elle.ns.cloudflare.com` |
 | Registrar | GoDaddy (registration only — DNS is on Cloudflare) |
 | `www` | Redirects to apex |
-| Contact form | **Not connected** — returns 503 until `RESEND_API_KEY` is set |
+| Contact form | **Working** — delivers to ghamaypepito@gmail.com via Resend |
 | Email | Still on A2 Hosting (`85.187.128.49`) |
 
 The previous WordPress site at this domain was replaced. It was backed up first.
@@ -68,19 +68,25 @@ this kind of site breaks in production while working perfectly locally.
 
 ## Outstanding
 
-### A. Connect the contact form (blocks enquiries)
+### A. Contact form — done
 
-The form returns a clear 503 and tells visitors to email directly, so nothing
-is silently lost — but nothing is delivered either.
+`RESEND_API_KEY` is set as an encrypted Pages secret and the form delivers.
+If it ever needs replacing:
 
 ```bash
 npx wrangler pages secret put RESEND_API_KEY --project-name=ghamaypepito-portfolio
 ```
 
-Paste the key at the prompt, then redeploy. Never commit the key or paste it
-into a chat or an issue; if it has been exposed anywhere, rotate it in Resend.
+Paste the key at the prompt, then **redeploy** — Cloudflare only picks up a
+new secret on the next deployment. Never commit the key or paste it into a
+chat or an issue; if it has been exposed anywhere, rotate it in Resend.
 
-Test afterwards:
+Two failure modes worth recognising, since the messages differ:
+
+- `401 "API key is invalid"` in the Worker logs — the key is present but wrong.
+- `503 "not connected to an inbox yet"` — the binding is empty or absent.
+
+Test with:
 
 ```bash
 curl -X POST https://ghamaypepito.com/api/contact \
@@ -90,13 +96,23 @@ curl -X POST https://ghamaypepito.com/api/contact \
 
 A `{"ok":true}` and an email in `ghamaypepito@gmail.com` means it works.
 
-### B. Verify the Resend sending domain (stops mail landing in spam)
+### B. Resend sending domain — records added, verification pending
 
-Domain `ghamaypepito.com` is already added in Resend (Tokyo region,
-return-path `send`). Three DNS records are still needed. Easiest route is
-Resend → Domains → **Auto configure**, which writes them into Cloudflare.
+All three DNS records are live in Cloudflare and resolve from Cloudflare,
+Google and Quad9. Resend shows the domain as **Pending** while it polls; it
+warns this can take up to a few hours.
 
-Manually, they are:
+**When it flips to Verified**, switch the sender in `wrangler.toml` and
+redeploy:
+
+```toml
+CONTACT_FROM = "Portfolio <hello@ghamaypepito.com>"
+```
+
+Until then it must stay as `onboarding@resend.dev` — sending from an
+unverified domain is rejected outright, which would break a working form.
+
+The records, for reference:
 
 | Type | Name | Content | Priority |
 | --- | --- | --- | --- |
