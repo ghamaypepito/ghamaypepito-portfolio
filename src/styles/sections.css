@@ -313,12 +313,10 @@
   will-change: transform, opacity;
 }
 .proj:hover { border-color: rgba(242, 179, 61, .4); }
-.proj--feat { grid-row: span 2; }
 .proj-thumb {
   position: relative; aspect-ratio: 4 / 3; overflow: hidden;
   display: grid; place-items: center; padding: 12px;
 }
-.proj--feat .proj-thumb { aspect-ratio: auto; height: 100%; min-height: 280px; }
 
 /* Stylised browser frame around each screenshot. */
 .bw {
@@ -600,8 +598,6 @@
   .manifesto-grid, .services-head, .exp-grid, .quotes-grid, .contact-grid { grid-template-columns: 1fr; gap: 46px; }
   .svc-grid { grid-template-columns: repeat(2, 1fr); }
   .proj-grid { grid-template-columns: repeat(2, 1fr); }
-  .proj--feat { grid-row: span 1; }
-  .proj--feat .proj-thumb { aspect-ratio: 4 / 3; min-height: 0; }
   .exp-rail { position: static; }
   .nav-links { display: none; }
   .quote-photo { max-width: 320px; }
@@ -642,8 +638,6 @@
 /* The layout-animation wrapper must not interrupt the grid's sizing. */
 .proj-cell { display: flex; min-width: 0; }
 .proj-cell > .proj { flex: 1; }
-.proj-cell--feat { grid-row: span 2; }
-@media (max-width: 980px) { .proj-cell--feat { grid-row: span 1; } }
 
 /* Skills render as a list; strip the marker without losing the semantics. */
 .skill-cloud { list-style: none; }

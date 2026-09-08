@@ -357,9 +357,6 @@ export const SITE = {
     },
   ] satisfies Testimonial[],
 
-  /** The three projects that get double-height cards in the grid. */
-  featured: ['thumbai.com', 'catamaran-outremer.com', 'proshadeph.com'],
-
   projects: [
     { name: 'Outremer Catamaran', url: 'catamaran-outremer.com', cat: 'Web Design', tag: 'Marine · Web' },
     { name: 'AFSA Industries', url: 'afsaindustries.com', cat: 'Web Design', tag: 'Industrial · Corporate' },

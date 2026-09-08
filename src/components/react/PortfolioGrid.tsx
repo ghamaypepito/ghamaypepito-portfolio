@@ -19,7 +19,7 @@ function initialsOf(name: string): string {
     .toUpperCase();
 }
 
-function ProjectCard({ p, featured }: { p: Project; featured: boolean }) {
+function ProjectCard({ p }: { p: Project }) {
   const slug = slugFor(p.url);
   const shot = SHOTS[slug];
   const viewRef = useRef<HTMLDivElement>(null);
@@ -48,7 +48,7 @@ function ProjectCard({ p, featured }: { p: Project; featured: boolean }) {
 
   return (
     <a
-      className={'proj' + (featured ? ' proj--feat' : '')}
+      className="proj"
       href={`https://${p.url}`}
       target="_blank"
       rel="noreferrer noopener"
@@ -100,7 +100,6 @@ export default function PortfolioGrid() {
   const [filter, setFilter] = useState<string>('All');
   const [limit, setLimit] = useState(PAGE);
   const still = useReducedMotion();
-  const featured = new Set<string>(SITE.featured);
 
   const list = useMemo(
     () => (filter === 'All' ? [...SITE.projects] : SITE.projects.filter((p) => p.cat === filter)),
@@ -156,10 +155,9 @@ export default function PortfolioGrid() {
                   ? { duration: 0 }
                   : { ...spring, delay: stagger(i, 0.028, 0.22) }
               }
-              style={featured.has(p.url) ? { gridRow: 'span 2' } : undefined}
-              className={featured.has(p.url) ? 'proj-cell proj-cell--feat' : 'proj-cell'}
+              className="proj-cell"
             >
-              <ProjectCard p={p} featured={featured.has(p.url)} />
+              <ProjectCard p={p} />
             </motion.div>
           ))}
         </AnimatePresence>
