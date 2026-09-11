@@ -149,7 +149,7 @@ export const SITE = {
      ------------------------------------------------------------------- */
   webapp: {
     bookingUrl:
-      'https://api.leadconnectorhq.com/widget/bookings/bookwithuswebdesign-22d4e697-2330-4cb7-bac0-00161989ead0',
+      'https://call.southsidestudio.ph/free-call',
     bookingLabel: 'Book a discovery call',
     title: ['Beyond the', 'brochure site.'],
     lead: 'Some problems do not fit a page and a contact form. When a business needs something that logs in, calculates, schedules or syncs, I build the application for it.',
