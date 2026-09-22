@@ -64,6 +64,16 @@ turned off before the nameservers were switched.
 default and both break Astro island hydration. This is the most common way
 this kind of site breaks in production while working perfectly locally.
 
+**4. Keep Email Address Obfuscation OFF** (Security → Settings → Client side
+abuse). It rewrites `mailto:` links to `/cdn-cgi/l/email-protection#…` and
+displays `[email protected]` to anyone without JavaScript, including crawlers.
+
+**5. If a Cloudflare feature injects a script, the CSP in `public/_headers`
+has to allow it.** Cloudflare Web Analytics injects its beacon at the edge,
+*after* our header is applied, so a default CSP blocks it — analytics then
+collect nothing and every visitor logs a console error. `static.cloudflareinsights.com`
+(script-src) and `cloudflareinsights.com` (connect-src) are already allowed.
+
 ---
 
 ## Outstanding
