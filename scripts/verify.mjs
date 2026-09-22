@@ -6,6 +6,7 @@
  *   node scripts/verify.mjs [baseUrl]
  */
 import { chromium } from 'playwright';
+import { readFile } from 'node:fs/promises';
 import { mkdir } from 'node:fs/promises';
 
 const BASE = process.argv[2] || 'http://localhost:4321';
@@ -70,8 +71,16 @@ checks.navItems = await page.locator('.nav-links a').count();
 checks.portalLinks = await page.evaluate(
   () => [...document.querySelectorAll('a[href*="ghl.southsidestudio.ph"]')].length,
 );
+// Read the booking URL out of the content file rather than hardcoding a host,
+// so changing where the CTA points cannot silently break this check.
+const bookingUrl = (
+  await readFile(new URL('../src/content/site.ts', import.meta.url), 'utf8')
+).match(/bookingUrl:\s*\n?\s*'([^']+)'/)?.[1];
+if (!bookingUrl) throw new Error('Could not read webapp.bookingUrl from site.ts');
+checks.bookingUrl = bookingUrl;
 checks.bookingLinks = await page.evaluate(
-  () => [...document.querySelectorAll('a[href*="leadconnectorhq.com/widget/bookings/"]')].length,
+  (url) => [...document.querySelectorAll('a')].filter((a) => a.href === url).length,
+  bookingUrl,
 );
 checks.externalLinksSafe = await page.evaluate(() =>
   [...document.querySelectorAll('a[target="_blank"]')].every((a) =>
@@ -242,7 +251,10 @@ expect('no console errors', errors.length === 0);
 expect('all seven page sections are present', checks.sectionsPresent === 7);
 expect('the nav lists six destinations', checks.navItems === 6);
 expect('the GoHighLevel portal links are wired', checks.portalLinks >= 2);
-expect('the discovery-call booking link is wired', checks.bookingLinks >= 1);
+expect(
+  `the discovery-call CTA points at ${checks.bookingUrl}`,
+  checks.bookingLinks >= 1,
+);
 expect('every external link carries rel=noopener', checks.externalLinksSafe === true);
 expect('the delivery rail expands a step', checks.railExpandsOnClick === true);
 expect('the model toolkit switches', checks.modelSwitches === true);
