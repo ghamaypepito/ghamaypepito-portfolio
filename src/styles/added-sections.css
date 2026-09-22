@@ -291,3 +291,21 @@
 .contact-right-host > .contact-right { flex: 1; }
 /* The rail host must not add a second panel around the rail itself. */
 .apps-rail[data-reveal-kids] > * { display: block; }
+
+/* Quieter sibling to .btn-primary. Used where a second call to action must be
+   obvious without competing with the primary one beside it. */
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: 'Sora', sans-serif; font-weight: 600; font-size: 15px;
+  color: var(--text); background: var(--panel);
+  border: 1px solid var(--line); border-radius: 100px;
+  padding: 14px 24px; cursor: pointer;
+  transition: border-color var(--dur-base) var(--ease-out-quart),
+              color var(--dur-base) var(--ease-out-quart),
+              transform var(--dur-base) var(--ease-spring);
+}
+.btn-ghost svg:first-child { color: var(--accent); }
+.btn-ghost svg:last-child { transition: transform var(--dur-base) var(--ease-out-quart); }
+.btn-ghost:hover { border-color: var(--accent); transform: translateY(-2px); }
+.btn-ghost:hover svg:last-child { transform: translate(2px, -2px); }
+.contact-book { margin-top: 28px; }
