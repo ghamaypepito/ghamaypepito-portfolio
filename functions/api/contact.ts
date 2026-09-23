@@ -121,7 +121,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   }
 
   const to = env.CONTACT_TO ?? 'ghamaypepito@gmail.com';
-  const from = env.CONTACT_FROM ?? 'Portfolio <onboarding@resend.dev>';
+  const from = env.CONTACT_FROM ?? 'Ghamay Pepito <hello@ghamaypepito.com>';
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',

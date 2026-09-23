@@ -16,7 +16,7 @@ Live state, everyday commands, and the steps that are still outstanding.
 | Nameservers | `archer.ns.cloudflare.com`, `elle.ns.cloudflare.com` |
 | Registrar | GoDaddy (registration only — DNS is on Cloudflare) |
 | `www` | Redirects to apex |
-| Contact form | **Working** — delivers to ghamaypepito@gmail.com via Resend |
+| Contact form | **Working** — from hello@ghamaypepito.com to ghamaypepito@gmail.com |
 | Email | Still on A2 Hosting (`85.187.128.49`) |
 
 The previous WordPress site at this domain was replaced. It was backed up first.
@@ -106,21 +106,11 @@ curl -X POST https://ghamaypepito.com/api/contact \
 
 A `{"ok":true}` and an email in `ghamaypepito@gmail.com` means it works.
 
-### B. Resend sending domain — records added, verification pending
+### B. Resend sending domain — done
 
-All three DNS records are live in Cloudflare and resolve from Cloudflare,
-Google and Quad9. Resend shows the domain as **Pending** while it polls; it
-warns this can take up to a few hours.
-
-**When it flips to Verified**, switch the sender in `wrangler.toml` and
-redeploy:
-
-```toml
-CONTACT_FROM = "Portfolio <hello@ghamaypepito.com>"
-```
-
-Until then it must stay as `onboarding@resend.dev` — sending from an
-unverified domain is rejected outright, which would break a working form.
+`ghamaypepito.com` is **verified** in Resend, and enquiries now send from
+`Ghamay Pepito <hello@ghamaypepito.com>` with SPF and DKIM on
+`send.ghamaypepito.com`, aligned under the existing DMARC record.
 
 The records, for reference:
 
