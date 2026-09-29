@@ -386,6 +386,8 @@ export const SITE = {
     { name: 'Gee Air Security', url: 'geeairsecurity.com', cat: 'Web Design', tag: 'Security · Web' },
     { name: 'Go Solar Philippines', url: 'gosolarphilippines.com', cat: 'SEO', tag: 'Energy · SEO' },
     { name: 'Storij Modules', url: 'storijmodules.com', cat: 'Development', tag: 'Tech · Modular' },
+    { name: 'Internal Benefit Advisors', url: 'internalbenefitadvisors.com', cat: 'Web Design', tag: 'Retirement · Benefits' },
+    { name: 'ARC Coworking', url: 'archubcoworking.com', cat: 'Web Design', tag: 'Coworking · Workspace' },
   ] satisfies Project[],
 } as const;
 

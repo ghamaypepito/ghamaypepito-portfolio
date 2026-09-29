@@ -16,7 +16,7 @@ type Command = {
 };
 
 /**
- * ⌘K menu. Jumps to sections, opens any of the 38 live projects, and exposes
+ * ⌘K menu. Jumps to sections, opens any of the live projects, and exposes
  * the contact routes. Fully keyboard-driven; the mouse is optional.
  */
 export default function CommandPalette({
@@ -180,7 +180,7 @@ export default function CommandPalette({
                 ref={inputRef}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Jump to a section, or search 38 projects…"
+                placeholder={`Jump to a section, or search ${SITE.projects.length} projects…`}
                 aria-label="Search commands and projects"
                 aria-controls="cmdk-results"
                 autoComplete="off"

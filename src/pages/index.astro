@@ -1,4 +1,5 @@
 ---
+import { SITE } from '@/content/site';
 import Base from '@/layouts/Base.astro';
 import Hero from '@/components/astro/Hero.astro';
 import Manifesto from '@/components/astro/Manifesto.astro';
@@ -16,7 +17,7 @@ import FloatingNav from '@/components/react/FloatingNav';
 
 const title = 'Ghamay Pepito — Website Designer, Developer & Digital Marketer';
 const description =
-  "Portfolio of Emeterio 'Ghamay' Pepito III — Website Designer & Developer, Digital Marketing Manager and SEO Specialist in Cebu City. Web apps, AI-assisted marketing systems, GoHighLevel implementation, and 38 live projects.";
+  `Portfolio of Emeterio 'Ghamay' Pepito III — Website Designer & Developer, Digital Marketing Manager and SEO Specialist in Cebu City. Web apps, AI-assisted marketing systems, GoHighLevel implementation, and ${SITE.projects.length} live projects.`;
 ---
 <Base title={title} description={description}>
   <FloatingNav client:idle />
