@@ -17,7 +17,19 @@ const { ai } = SITE;
           {ai.title[0]}<br /><span class="muted-h">{ai.title[1]}</span>
         </h2>
       </div>
-      <p class="section-sub ai-lead">{ai.lead}</p>
+      <div class="ai-lead-col">
+        <p class="section-sub ai-lead">{ai.lead}</p>
+        <a
+          class="btn-primary"
+          href={SITE.webapp.bookingUrl}
+          target="_blank"
+          rel="noreferrer noopener"
+          data-cursor="Book ↗"
+        >
+          Put AI to work on your funnel
+          <Icon name="arrowUpRight" size={17} />
+        </a>
+      </div>
     </div>
 
     <ul class="ai-grid">

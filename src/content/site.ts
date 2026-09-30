@@ -388,6 +388,8 @@ export const SITE = {
     { name: 'Storij Modules', url: 'storijmodules.com', cat: 'Development', tag: 'Tech · Modular' },
     { name: 'Internal Benefit Advisors', url: 'internalbenefitadvisors.com', cat: 'Web Design', tag: 'Retirement · Benefits' },
     { name: 'ARC Coworking', url: 'archubcoworking.com', cat: 'Web Design', tag: 'Coworking · Workspace' },
+    { name: 'CJ Panganiban', url: 'cjpanganiban.com', cat: 'Web Design', tag: 'Legal · Personal' },
+    { name: 'Liberty & Prosperity', url: 'libpros.com', cat: 'Web Design', tag: 'Nonprofit · Editorial' },
   ] satisfies Project[],
 } as const;
 

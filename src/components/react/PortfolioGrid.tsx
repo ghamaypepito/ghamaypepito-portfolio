@@ -11,8 +11,11 @@ type Shot = { w: number; h: number };
 const SHOTS = shots as Record<string, Shot>;
 
 function initialsOf(name: string): string {
+  // Skip tokens with no letters, so "Liberty & Prosperity" reads LP rather
+  // than L&. Used only for the tile shown when a site cannot be captured.
   return name
-    .split(' ')
+    .split(/\s+/)
+    .filter((w) => /[a-z]/i.test(w))
     .slice(0, 2)
     .map((w) => w[0])
     .join('')

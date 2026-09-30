@@ -124,6 +124,13 @@ await page.evaluate(() => {
   if (more) more.click();
 });
 await page.waitForTimeout(1200);
+// Count expected cards from the content file rather than a literal, so adding
+// a project cannot fail a check that is really about "all of them rendered".
+const siteSrc = await readFile(new URL('../src/content/site.ts', import.meta.url), 'utf8');
+const projectsStart = siteSrc.indexOf('projects: [');
+checks.expectedCards = (
+  siteSrc.slice(projectsStart).match(/\{ name: '[^']*', url: '[^']*'/g) || []
+).length;
 checks.allCardsRendered = await page.locator('.proj').count();
 checks.cardsThatAreLinks = await page.locator('a.proj').count();
 
@@ -270,7 +277,10 @@ expect(
   checks.hiddenWithoutJs === 0,
 );
 expect('section headings render without JavaScript', checks.headingsWithoutJs >= 7);
-expect('every project card renders once expanded', checks.allCardsRendered === 29);
+expect(
+  `all ${checks.expectedCards} project cards render once expanded`,
+  checks.expectedCards > 0 && checks.allCardsRendered === checks.expectedCards,
+);
 expect('every project card links out', checks.cardsThatAreLinks === checks.allCardsRendered);
 
 if (failures.length) {
