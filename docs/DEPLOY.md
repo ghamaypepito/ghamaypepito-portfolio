@@ -25,6 +25,12 @@ The previous WordPress site at this domain was replaced. It was backed up first.
 
 ## Everyday deploy
 
+Your Cloudflare login can see two accounts (`@gmail.com` and `@me.com`), and
+wrangler picks the first by default — which is the wrong one for this site.
+`npm run deploy` pins `CLOUDFLARE_ACCOUNT_ID` to the `@me.com` account
+(`ecf338ff…`). If you deploy by hand, set it yourself.
+
+
 ```bash
 npm run build          # typecheck + build
 npm run deploy         # wrangler pages deploy dist

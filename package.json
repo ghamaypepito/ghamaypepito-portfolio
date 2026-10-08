@@ -3,7 +3,7 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
-  "description": "Portfolio of Emeterio 'Ghamay' Pepito III — Website Designer & Developer, Digital Marketing Manager, SEO Specialist.",
+  "description": "Portfolio of Emeterio 'Ghamay' Pepito III \u2014 Website Designer & Developer, Digital Marketing Manager, SEO Specialist.",
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && tsc -p functions/tsconfig.json && astro build",
@@ -12,7 +12,7 @@
     "shots": "node scripts/capture-shots.mjs",
     "shots:optimize": "node scripts/optimize-shots.mjs",
     "og": "node scripts/generate-og.mjs",
-    "deploy": "wrangler pages deploy dist --project-name=ghamaypepito-portfolio",
+    "deploy": "CLOUDFLARE_ACCOUNT_ID=ecf338ffbba812b0904be0112777f56d wrangler pages deploy dist --project-name=ghamaypepito-portfolio --branch main",
     "typecheck": "astro check && tsc -p functions/tsconfig.json"
   },
   "dependencies": {
