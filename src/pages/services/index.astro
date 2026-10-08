@@ -1,0 +1,110 @@
+---
+import Base from '@/layouts/Base.astro';
+import { SITE } from '@/content/site';
+import { SERVICES } from '@/content/services';
+import Kicker from '@/components/astro/Kicker.astro';
+import Icon from '@/components/astro/Icon.astro';
+import Workflow from '@/components/astro/Workflow.astro';
+import Footer from '@/components/astro/Footer.astro';
+import PageNav from '@/components/astro/PageNav.astro';
+import FloatingNav from '@/components/react/FloatingNav';
+
+const title = 'Services — Web, Marketing, Branding, Automation & AI | Ghamay Pepito';
+const description =
+  'Seven ways I help businesses grow: web development, digital marketing and SEO, branding, business automation, AI agents, AI dashboards and mobile apps. Cebu City, working worldwide.';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Services',
+    description,
+    url: new URL('/services', Astro.site).href,
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: SERVICES.length,
+      itemListElement: SERVICES.map((s, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'Service',
+          name: s.nav,
+          description: s.tagline,
+          url: new URL(`/services/${s.slug}`, Astro.site).href,
+          provider: { '@id': `${Astro.site}#person` },
+          areaServed: ['PH', 'Worldwide'],
+        },
+      })),
+    },
+  },
+];
+---
+<Base title={title} description={description} jsonLd={jsonLd}>
+  <FloatingNav client:idle pathname={Astro.url.pathname} />
+  <PageNav />
+
+  <main id="top">
+    <header class="band page-hero">
+      <div class="wrap">
+        <div data-reveal>
+          <Kicker>Services</Kicker>
+          <h1 class="page-title">
+            Seven ways I help<br /><span class="muted-h">businesses grow.</span>
+          </h1>
+          <p class="section-sub page-lead">
+            Design, build, market, automate. Most clients start with one and come back for
+            the next — so each of these is built to work on its own and to fit together.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <section class="band svc-index" aria-label="All services">
+      <div class="wrap">
+        <ul class="svc-index-grid">
+          {SERVICES.map((s) => (
+            <li class="svc-tile" data-reveal data-reveal-group="svc-index">
+              <a class="svc-tile-link" href={`/services/${s.slug}`} data-cursor="Open">
+                <span class="svc-tile-icon" aria-hidden="true"><Icon name={s.icon} size={24} /></span>
+                {s.isNew && <span class="svc-tile-new">New</span>}
+                <h2 class="svc-tile-title">{s.nav}</h2>
+                <p class="svc-tile-blurb">{s.tagline}</p>
+                <span class="svc-tile-foot">
+                  <span class="svc-tile-count">{s.count}</span>
+                  <span class="svc-tile-go" aria-hidden="true"><Icon name="arrow" size={16} /></span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <Workflow />
+
+    <section class="band svc-cta" aria-label="Get started">
+      <div class="wrap svc-cta-inner">
+        <div data-reveal>
+          <h2 class="section-title">Not sure which<br /><span class="muted-h">you need?</span></h2>
+          <p class="section-sub">
+            That is what the first call is for. Twenty minutes, no pitch deck, and an honest
+            answer about whether I am the right person for it.
+          </p>
+        </div>
+        <a
+          class="btn-primary"
+          href={SITE.webapp.bookingUrl}
+          target="_blank"
+          rel="noreferrer noopener"
+          data-cursor="Book ↗"
+          data-reveal
+        >
+          Book a discovery call
+          <Icon name="arrowUpRight" size={17} />
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Base>

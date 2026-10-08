@@ -1,291 +1,271 @@
 /**
- * Visual + behavioural smoke test against a running dev/preview server.
- * Captures section screenshots and reports console errors, so a regression
- * shows up as an image rather than a guess.
+ * Visual and behavioural smoke test for the whole site.
  *
  *   node scripts/verify.mjs [baseUrl]
+ *
+ * Generic checks run against every route: console cleanliness, scroll reveals,
+ * reduced motion, no-JavaScript readability and mobile overflow. Page-specific
+ * checks follow. Screenshots land in _gen/verify/.
+ *
+ * Expected counts are derived from src/content, never hardcoded, so adding a
+ * project or a service cannot fail a check that is really about "they all
+ * rendered".
  */
 import { chromium } from 'playwright';
-import { readFile } from 'node:fs/promises';
-import { mkdir } from 'node:fs/promises';
+import { readFile, mkdir } from 'node:fs/promises';
 
-const BASE = process.argv[2] || 'http://localhost:4321';
+const BASE = (process.argv[2] || 'http://localhost:4321').replace(/\/$/, '');
 const OUT = '_gen/verify';
 
-const SHOTS = [
-  ['01-hero', 0],
-  ['02-manifesto', '.manifesto'],
-  ['03-services', '#services'],
-  ['04-portfolio', '#work'],
-  ['05-webapps', '#apps'],
-  ['06-ai', '#ai'],
-  ['07-gohighlevel', '#ghl'],
-  ['08-experience', '#about'],
-  ['09-quotes', '.quotes'],
-  ['10-contact', '#contact'],
-];
+/* --- expectations, read from the content files ---------------------------- */
+const siteSrc = await readFile(new URL('../src/content/site.ts', import.meta.url), 'utf8');
+const servicesSrc = await readFile(new URL('../src/content/services.ts', import.meta.url), 'utf8');
+
+const projectsFrom = siteSrc.indexOf('projects: [');
+const EXPECTED_PROJECTS = (
+  siteSrc.slice(projectsFrom).match(/\{ name: '[^']*', url: '[^']*'/g) || []
+).length;
+const EXPECTED_FEATURED = (siteSrc.match(/featured: true/g) || []).length;
+const SERVICE_SLUGS = [...servicesSrc.matchAll(/^\s{4}slug: '([^']+)'/gm)].map((m) => m[1]);
+const BOOKING_URL = siteSrc.match(/bookingUrl:\s*\n?\s*'([^']+)'/)?.[1];
+
+if (!EXPECTED_PROJECTS || !SERVICE_SLUGS.length || !BOOKING_URL) {
+  throw new Error('Could not read expectations from src/content');
+}
+
+const ROUTES = ['/', '/services', '/work', ...SERVICE_SLUGS.map((s) => `/services/${s}`)];
 
 await mkdir(OUT, { recursive: true });
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-
-const errors = [];
-page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
-page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
-
-await page.goto(BASE, { waitUntil: 'networkidle' });
-// Turn off smooth scrolling so each capture lands where it was told to.
-await page.addStyleTag({ content: 'html{scroll-behavior:auto !important}' });
-
-for (const [name, target] of SHOTS) {
-  if (typeof target === 'number') {
-    await page.evaluate((y) => window.scrollTo(0, y), target);
-  } else {
-    await page.evaluate((sel) => {
-      const el = document.querySelector(sel);
-      if (el) window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY);
-    }, target);
-  }
-  // Let reveals, lazy images and islands settle.
-  await page.waitForTimeout(1400);
-  await page.screenshot({ path: `${OUT}/${name}.png` });
-}
-
-// Behavioural checks that a screenshot cannot show.
+const failures = [];
+const expect = (label, ok) => { if (!ok) failures.push(label); };
 const checks = {};
-await page.evaluate(() => window.scrollTo(0, document.querySelector('#work').offsetTop));
-await page.waitForTimeout(1200);
 
-checks.projectCards = await page.locator('.proj').count();
-checks.realScreenshots = await page.locator('.bw-view img').count();
-checks.fallbackTiles = await page.locator('.bw-fallback').count();
+/* --- 1. every route: loads, no console errors, reveals fire --------------- */
+const routeReport = [];
+for (const route of ROUTES) {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const errors = [];
+  page.on('console', (m) => { if (m.type() === 'error') errors.push(`${route}: ${m.text()}`); });
+  page.on('pageerror', (e) => errors.push(`${route}: pageerror ${e.message}`));
 
-// The added sections and their outbound links.
-checks.sectionsPresent = await page.evaluate(() =>
-  ['work', 'services', 'apps', 'ai', 'ghl', 'about', 'contact']
-    .filter((id) => document.getElementById(id)).length,
-);
-checks.navItems = await page.locator('.nav-links a').count();
-// The two outbound CTAs are distinct destinations and are checked separately,
-// so swapping one cannot silently pass because the other still matches.
-checks.portalLinks = await page.evaluate(
-  () => [...document.querySelectorAll('a[href*="ghl.southsidestudio.ph"]')].length,
-);
-// Read the booking URL out of the content file rather than hardcoding a host,
-// so changing where the CTA points cannot silently break this check.
-const bookingUrl = (
-  await readFile(new URL('../src/content/site.ts', import.meta.url), 'utf8')
-).match(/bookingUrl:\s*\n?\s*'([^']+)'/)?.[1];
-if (!bookingUrl) throw new Error('Could not read webapp.bookingUrl from site.ts');
-checks.bookingUrl = bookingUrl;
-checks.bookingLinks = await page.evaluate(
-  (url) => [...document.querySelectorAll('a')].filter((a) => a.href === url).length,
-  bookingUrl,
-);
-checks.externalLinksSafe = await page.evaluate(() =>
-  [...document.querySelectorAll('a[target="_blank"]')].every((a) =>
-    (a.getAttribute('rel') || '').includes('noopener'),
-  ),
-);
+  const res = await page.goto(`${BASE}${route}`, { waitUntil: 'networkidle' });
+  await page.addStyleTag({ content: 'html{scroll-behavior:auto !important}' });
+  await page.evaluate(async () => {
+    for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight) {
+      window.scrollTo(0, y);
+      await new Promise((r) => setTimeout(r, 90));
+    }
+  });
+  await page.waitForTimeout(1000);
 
-// The delivery rail and the model toolkit are the two new interactive pieces.
-await page.evaluate(() => window.scrollTo(0, document.querySelector('#apps').offsetTop));
-await page.waitForTimeout(1200);
-const railButtons = page.locator('.rail-btn');
-await railButtons.nth(2).click();
-await page.waitForTimeout(600);
-checks.railExpandsOnClick = await page.locator('.rail-item.is-active .rail-blurb span').isVisible();
+  const r = await page.evaluate(() => {
+    const ignorable = (el) =>
+      el.closest('[aria-hidden="true"]') ||
+      el.classList.contains('proj-go') ||
+      el.classList.contains('hp');
+    return {
+      title: document.title,
+      h1: document.querySelectorAll('h1').length,
+      reveals: document.querySelectorAll('[data-reveal]').length,
+      revealsShown: document.querySelectorAll('[data-reveal].is-in').length,
+      stranded: [...document.querySelectorAll('main *')].filter(
+        (el) =>
+          getComputedStyle(el).opacity === '0' &&
+          el.getBoundingClientRect().height > 20 &&
+          !ignorable(el),
+      ).length,
+      unsafeLinks: [...document.querySelectorAll('a[target="_blank"]')].filter(
+        (a) => !(a.getAttribute('rel') || '').includes('noopener'),
+      ).length,
+      canonical: document.querySelector('link[rel=canonical]')?.href ?? null,
+      jsonLd: document.querySelectorAll('script[type="application/ld+json"]').length,
+    };
+  });
 
-await page.evaluate(() => window.scrollTo(0, document.querySelector('#ai').offsetTop));
-await page.waitForTimeout(1200);
-await page.locator('.model').nth(2).click();
-await page.waitForTimeout(600);
-checks.modelSwitches = await page.locator('.model').nth(2).evaluate((el) =>
-  el.classList.contains('is-active'),
-);
-checks.aiOutcomeCards = await page.locator('.ai-card').count();
-checks.ghlFeatures = await page.locator('.ghl-feature').count();
+  routeReport.push({ route, status: res?.status(), ...r, errors: errors.length });
+  expect(`${route} returns 200`, res?.status() === 200);
+  expect(`${route} has exactly one h1`, r.h1 === 1);
+  expect(`${route} reveals all fired (${r.revealsShown}/${r.reveals})`, r.revealsShown === r.reveals);
+  expect(`${route} has nothing stranded invisible`, r.stranded === 0);
+  expect(`${route} external links carry rel=noopener`, r.unsafeLinks === 0);
+  expect(`${route} emits structured data`, r.jsonLd > 0);
+  expect(`${route} console is clean`, errors.length === 0);
+  if (errors.length) console.error(errors.slice(0, 3).join('\n'));
 
-/* Archived projects must never render as links. */
-await page.evaluate(() => window.scrollTo(0, document.querySelector('#work').offsetTop));
-await page.waitForTimeout(1000);
-await page.evaluate(() => {
-  const more = document.querySelector('.btn-more');
-  if (more) more.click();
-});
-await page.waitForTimeout(900);
-await page.evaluate(() => {
-  const more = document.querySelector('.btn-more');
-  if (more) more.click();
-});
-await page.waitForTimeout(900);
-await page.evaluate(() => {
-  const more = document.querySelector('.btn-more');
-  if (more) more.click();
-});
-await page.waitForTimeout(1200);
-// Count expected cards from the content file rather than a literal, so adding
-// a project cannot fail a check that is really about "all of them rendered".
-const siteSrc = await readFile(new URL('../src/content/site.ts', import.meta.url), 'utf8');
-const projectsStart = siteSrc.indexOf('projects: [');
-checks.expectedCards = (
-  siteSrc.slice(projectsStart).match(/\{ name: '[^']*', url: '[^']*'/g) || []
-).length;
-checks.allCardsRendered = await page.locator('.proj').count();
-checks.cardsThatAreLinks = await page.locator('a.proj').count();
+  await page.screenshot({
+    path: `${OUT}${route === '/' ? '/home' : route.replace(/\//g, '-')}.png`,
+    fullPage: false,
+  });
+  await page.close();
+}
+checks.routes = routeReport.map((r) => `${r.route} [${r.status}]`);
 
-// Filter interaction.
-await page.getByRole('tab', { name: /^E-Commerce/ }).click();
-await page.waitForTimeout(900);
-checks.afterEcommerceFilter = await page.locator('.proj').count();
-await page.screenshot({ path: `${OUT}/08-filtered.png` });
+/* --- 2. homepage: services link out, three featured, workflow ------------- */
+{
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  await page.goto(BASE, { waitUntil: 'networkidle' });
+  await page.addStyleTag({ content: 'html{scroll-behavior:auto !important}' });
+  await page.waitForTimeout(1500);
 
-await page.getByRole('tab', { name: /^All/ }).click();
-await page.waitForTimeout(700);
+  checks.homeServiceCards = await page.locator('a.svc-card').count();
+  checks.homeServiceLinks = await page.evaluate(
+    () => [...document.querySelectorAll('a.svc-card')].filter((a) => a.pathname.startsWith('/services/')).length,
+  );
+  checks.homeFeatured = await page.locator('#work .proj').count();
+  checks.homeWorkflowSteps = await page.locator('.wf-step').count();
+  checks.homeSeeAll = await page.locator('a[href="/work"]').count();
+  checks.homeBookingLinks = await page.evaluate(
+    (url) => [...document.querySelectorAll('a')].filter((a) => a.href === url).length,
+    BOOKING_URL,
+  );
+  await page.close();
 
-// Command palette.
-await page.keyboard.press('Meta+k');
-await page.waitForTimeout(600);
-checks.paletteOpen = await page.locator('[role="dialog"]').isVisible().catch(() => false);
-if (checks.paletteOpen) {
-  await page.keyboard.type('proshade');
-  await page.waitForTimeout(500);
-  checks.paletteResults = await page.locator('.cmdk-item').count();
-  await page.screenshot({ path: `${OUT}/09-palette.png` });
-  await page.keyboard.press('Escape');
+  expect(`homepage shows all ${SERVICE_SLUGS.length} service cards`, checks.homeServiceCards === SERVICE_SLUGS.length);
+  expect('every homepage service card links to its page', checks.homeServiceLinks === SERVICE_SLUGS.length);
+  expect(`homepage features exactly ${EXPECTED_FEATURED} projects`, checks.homeFeatured === EXPECTED_FEATURED);
+  expect('homepage shows the five-step workflow', checks.homeWorkflowSteps === 5);
+  expect('homepage links through to /work', checks.homeSeeAll >= 1);
+  expect('homepage booking CTA is wired', checks.homeBookingLinks >= 1);
 }
 
-// Reveal coverage — nothing should still be invisible after a full pass.
-await page.evaluate(async () => {
-  const step = window.innerHeight;
-  for (let y = 0; y < document.body.scrollHeight; y += step) {
-    window.scrollTo(0, y);
-    await new Promise((r) => setTimeout(r, 90));
-  }
-});
-await page.waitForTimeout(900);
-checks.revealsTotal = await page.locator('[data-reveal]').count();
-checks.revealsShown = await page.locator('[data-reveal].is-in').count();
+/* --- 3. /services: one tile per service ----------------------------------- */
+{
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  await page.goto(`${BASE}/services`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1200);
+  checks.serviceTiles = await page.locator('.svc-tile-link').count();
+  checks.serviceTilesLinked = await page.evaluate(
+    (slugs) => slugs.filter((s) => document.querySelector(`a[href="/services/${s}"]`)).length,
+    SERVICE_SLUGS,
+  );
+  checks.newBadges = await page.locator('.svc-tile-new').count();
+  await page.close();
 
-/* Reduced-motion pass. The failure mode this guards against is an element
-   that starts hidden for an entrance animation and is never told to arrive,
-   leaving content permanently invisible for anyone who opts out of motion. */
-const still = await browser.newPage({
-  viewport: { width: 1440, height: 900 },
-  reducedMotion: 'reduce',
-});
-await still.goto(BASE, { waitUntil: 'networkidle' });
-await still.evaluate(async () => {
-  for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight) {
-    window.scrollTo(0, y);
-    await new Promise((r) => setTimeout(r, 80));
+  expect(`/services lists all ${SERVICE_SLUGS.length} services`, checks.serviceTiles === SERVICE_SLUGS.length);
+  expect('/services links to every service page', checks.serviceTilesLinked === SERVICE_SLUGS.length);
+  expect('/services badges the newer offerings', checks.newBadges >= 1);
+}
+
+/* --- 4. each service page has its required furniture ---------------------- */
+{
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  const thin = [];
+  for (const slug of SERVICE_SLUGS) {
+    await page.goto(`${BASE}/services/${slug}`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(700);
+    const r = await page.evaluate(() => ({
+      outcomes: document.querySelectorAll('.svc-outcome-grid .ai-card').length,
+      deliverables: document.querySelectorAll('.svc-deliverables li').length,
+      faqs: document.querySelectorAll('.faq-item').length,
+      workflow: document.querySelectorAll('.wf-step').length,
+      crumbs: document.querySelectorAll('.crumbs').length,
+      switch: document.querySelectorAll('.svc-switch-link').length,
+    }));
+    if (r.outcomes < 3 || r.deliverables < 4 || r.faqs < 2 || r.workflow !== 5 || r.switch !== 2) {
+      thin.push(`${slug} ${JSON.stringify(r)}`);
+    }
   }
-});
-await still.waitForTimeout(1200);
-const stranded = await still.evaluate(() =>
-  [...document.querySelectorAll('main *')]
-    .filter((el) => {
-      const s = getComputedStyle(el);
-      return (
-        s.opacity === '0' &&
+  checks.thinServicePages = thin;
+  await page.close();
+  expect(`every service page is complete (${JSON.stringify(thin)})`, thin.length === 0);
+}
+
+/* --- 5. /work: the full grid, filtering, and every card links out --------- */
+{
+  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  await page.goto(`${BASE}/work`, { waitUntil: 'networkidle' });
+  await page.addStyleTag({ content: 'html{scroll-behavior:auto !important}' });
+  await page.waitForTimeout(1500);
+
+  for (let i = 0; i < 4; i++) {
+    const more = page.locator('.btn-more');
+    if (await more.count()) { await more.click(); await page.waitForTimeout(700); } else break;
+  }
+  checks.workCards = await page.locator('.proj').count();
+  checks.workCardsLinked = await page.locator('a.proj').count();
+  checks.workRealShots = await page.locator('.bw-view img').count();
+
+  const ecom = page.getByRole('tab', { name: /^E-Commerce/ });
+  if (await ecom.count()) {
+    await ecom.click();
+    await page.waitForTimeout(900);
+    checks.workAfterFilter = await page.locator('.proj').count();
+  }
+  await page.close();
+
+  expect(`/work renders all ${EXPECTED_PROJECTS} projects`, checks.workCards === EXPECTED_PROJECTS);
+  expect('/work: every card links out', checks.workCardsLinked === checks.workCards);
+  expect('/work: most cards show a real screenshot', checks.workRealShots >= EXPECTED_PROJECTS - 8);
+  expect('/work: the category filter narrows the grid',
+    checks.workAfterFilter > 0 && checks.workAfterFilter < EXPECTED_PROJECTS);
+}
+
+/* --- 6. reduced motion and no-JavaScript, on the two richest pages -------- */
+for (const route of ['/', '/services/ai-agents']) {
+  const still = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  const sp = await still.newPage();
+  await sp.goto(`${BASE}${route}`, { waitUntil: 'networkidle' });
+  await sp.evaluate(async () => {
+    for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight) {
+      window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 80));
+    }
+  });
+  await sp.waitForTimeout(1000);
+  const strandedStill = await sp.evaluate(() =>
+    [...document.querySelectorAll('main *')].filter(
+      (el) => getComputedStyle(el).opacity === '0' &&
         el.getBoundingClientRect().height > 20 &&
-        !el.closest('[aria-hidden="true"]')
-      );
-    })
-    .map((el) => String(el.className || el.tagName).slice(0, 40)),
-);
-checks.reducedMotionInvisible = stranded.length;
-checks.reducedMotionInvisibleSample = stranded.slice(0, 6);
-checks.reducedMotionCards = await still.locator('.proj').count();
-await still.close();
+        !el.closest('[aria-hidden="true"]') &&
+        !el.classList.contains('proj-go') && !el.classList.contains('hp'),
+    ).length);
+  await still.close();
+  expect(`${route} reduced motion strands nothing`, strandedStill === 0);
 
-/* No-JavaScript pass. Nothing on the page should depend on hydration to
-   become visible — that is the failure mode behind both reveal bugs so far.
-   Decorative hover affordances and the honeypot are legitimately hidden. */
-const noJs = await browser.newContext({
-  viewport: { width: 1440, height: 900 },
-  javaScriptEnabled: false,
-});
-const noJsPage = await noJs.newPage();
-await noJsPage.goto(BASE, { waitUntil: 'load' });
-const hiddenWithoutJs = await noJsPage.$$eval('main *', (els) =>
-  els
-    .filter((el) => {
+  const noJs = await browser.newContext({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false });
+  const np = await noJs.newPage();
+  await np.goto(`${BASE}${route}`, { waitUntil: 'load' });
+  const hiddenNoJs = await np.$$eval('main *', (els) =>
+    els.filter((el) => {
       const s = getComputedStyle(el);
       if (s.opacity !== '0') return false;
       if (el.getBoundingClientRect().height <= 20) return false;
-      // Hover-only affordances and the spam honeypot are hidden on purpose.
       if (el.closest('[aria-hidden="true"]')) return false;
-      if (el.classList.contains('proj-go') || el.classList.contains('hp')) return false;
-      return true;
-    })
-    .map((el) => String(el.className || el.tagName).slice(0, 40)),
-);
-checks.hiddenWithoutJs = hiddenWithoutJs.length;
-checks.hiddenWithoutJsSample = hiddenWithoutJs.slice(0, 6);
-checks.headingsWithoutJs = await noJsPage.locator('main h2').count();
-await noJs.close();
+      return !el.classList.contains('proj-go') && !el.classList.contains('hp');
+    }).length);
+  const headings = await np.locator('main h2').count();
+  await noJs.close();
+  expect(`${route} is readable without JavaScript`, hiddenNoJs === 0);
+  expect(`${route} renders headings without JavaScript`, headings >= 1);
+}
 
-// Mobile pass.
-const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true });
-await mobile.goto(BASE, { waitUntil: 'networkidle' });
-await mobile.waitForTimeout(1200);
-await mobile.screenshot({ path: `${OUT}/10-mobile-hero.png` });
-await mobile.evaluate(() => window.scrollTo(0, document.querySelector('#work').offsetTop));
-await mobile.waitForTimeout(1500);
-await mobile.screenshot({ path: `${OUT}/11-mobile-work.png` });
-checks.mobileOverflow = await mobile.evaluate(
-  () => document.documentElement.scrollWidth > window.innerWidth + 1,
-);
+/* --- 7. mobile: no horizontal overflow anywhere --------------------------- */
+{
+  const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true });
+  const mp = await mobile.newPage();
+  const overflowing = [];
+  for (const route of ROUTES) {
+    await mp.goto(`${BASE}${route}`, { waitUntil: 'networkidle' });
+    await mp.waitForTimeout(700);
+    const over = await mp.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
+    if (over) overflowing.push(route);
+  }
+  await mp.screenshot({ path: `${OUT}/mobile-home.png` });
+  await mobile.close();
+  checks.mobileOverflow = overflowing;
+  expect(`no route scrolls sideways on mobile (${JSON.stringify(overflowing)})`, overflowing.length === 0);
+}
 
 await browser.close();
 
-console.log(JSON.stringify(checks, null, 2));
-console.log(errors.length ? `\nConsole errors:\n${errors.join('\n')}` : '\nNo console errors.');
-
-/* Assertions. These are what make this a test rather than a screenshot run. */
-const failures = [];
-const expect = (label, ok) => { if (!ok) failures.push(label); };
-
-expect('portfolio grid rendered its first page of cards', checks.projectCards === 12);
-expect('most cards show a real screenshot', checks.realScreenshots >= 8);
-expect('category filter narrowed the grid', checks.afterEcommerceFilter > 0 && checks.afterEcommerceFilter < 12);
-expect('command palette opened on Cmd-K', checks.paletteOpen === true);
-expect('command palette searched projects', (checks.paletteResults ?? 0) >= 1);
-expect('every scroll reveal became visible', checks.revealsShown === checks.revealsTotal);
-expect('mobile layout does not scroll horizontally', checks.mobileOverflow === false);
-expect('no console errors', errors.length === 0);
-expect('all seven page sections are present', checks.sectionsPresent === 7);
-expect('the nav lists six destinations', checks.navItems === 6);
-expect('the GoHighLevel portal links are wired', checks.portalLinks >= 2);
-expect(
-  `the discovery-call CTA points at ${checks.bookingUrl}`,
-  checks.bookingLinks >= 1,
-);
-expect('every external link carries rel=noopener', checks.externalLinksSafe === true);
-expect('the delivery rail expands a step', checks.railExpandsOnClick === true);
-expect('the model toolkit switches', checks.modelSwitches === true);
-expect('four AI outcome cards render', checks.aiOutcomeCards === 4);
-expect('six GoHighLevel features render', checks.ghlFeatures === 6);
-expect(
-  `nothing is stranded invisible under prefers-reduced-motion (${JSON.stringify(checks.reducedMotionInvisibleSample)})`,
-  checks.reducedMotionInvisible === 0,
-);
-expect('project cards render under reduced motion', checks.reducedMotionCards === 12);
-expect(
-  `nothing depends on JavaScript to become visible (${JSON.stringify(checks.hiddenWithoutJsSample)})`,
-  checks.hiddenWithoutJs === 0,
-);
-expect('section headings render without JavaScript', checks.headingsWithoutJs >= 7);
-expect(
-  `all ${checks.expectedCards} project cards render once expanded`,
-  checks.expectedCards > 0 && checks.allCardsRendered === checks.expectedCards,
-);
-expect('every project card links out', checks.cardsThatAreLinks === checks.allCardsRendered);
+console.log(JSON.stringify(
+  { ...checks, expected: { projects: EXPECTED_PROJECTS, featured: EXPECTED_FEATURED, services: SERVICE_SLUGS.length } },
+  null, 2,
+));
 
 if (failures.length) {
   console.error(`\n${failures.length} check(s) failed:`);
   for (const f of failures) console.error(`  ✗ ${f}`);
   process.exit(1);
 }
-console.log('\nAll checks passed.');
+console.log(`\nAll checks passed across ${ROUTES.length} routes.`);

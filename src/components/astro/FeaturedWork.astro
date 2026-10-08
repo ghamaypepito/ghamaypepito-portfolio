@@ -1,0 +1,93 @@
+---
+import { FEATURED_PROJECTS, CLIENT_PROJECTS, slugFor } from '@/content/site';
+
+// The heading counts what is NOT shown here, so it stays truthful as the
+// featured set or the portfolio changes.
+const remaining = CLIENT_PROJECTS.length - FEATURED_PROJECTS.length;
+import shots from '@/content/shots.json';
+import Kicker from './Kicker.astro';
+import Icon from './Icon.astro';
+
+const SHOTS = shots as Record<string, { w: number; h: number }>;
+
+function initialsOf(name: string): string {
+  return name.split(/\s+/).filter((w) => /[a-z]/i.test(w)).slice(0, 2)
+    .map((w) => w[0]).join('').toUpperCase();
+}
+---
+<section class="band portfolio" id="work" aria-labelledby="work-h">
+  <div class="wrap">
+    <div class="port-head" data-reveal>
+      <div>
+        <Kicker light>Selected work</Kicker>
+        <h2 class="section-title" id="work-h">
+          Three I'm proud of.<br />
+          <span class="muted-h">{remaining} more behind them.</span>
+        </h2>
+      </div>
+      <p class="section-sub port-sub">
+        A decade of websites, stores and brands shipped for clients across the
+        Philippines and beyond — every one of these is live right now.
+      </p>
+    </div>
+
+    <div class="proj-grid proj-grid--featured">
+      {FEATURED_PROJECTS.map((p) => {
+        const slug = slugFor(p.url);
+        const shot = SHOTS[slug];
+        return (
+          <a
+            class="proj"
+            href={`https://${p.url}`}
+            target="_blank"
+            rel="noreferrer noopener"
+            data-cursor="Visit ↗"
+            data-reveal
+            data-reveal-group="featured"
+            aria-label={`${p.name} — ${p.tag}. Opens ${p.url} in a new tab.`}
+          >
+            <div class="proj-thumb">
+              <div class="bw">
+                <div class="bw-bar" aria-hidden="true">
+                  <i></i><i></i><i></i>
+                  <span class="bw-url">{p.url}</span>
+                </div>
+                {shot ? (
+                  <div class="bw-view">
+                    <img
+                      src={`/shots/${slug}.webp`}
+                      alt={`Screenshot of the ${p.name} website`}
+                      width={shot.w}
+                      height={shot.h}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                ) : (
+                  <div class="bw-fallback" aria-hidden="true">{initialsOf(p.name)}</div>
+                )}
+              </div>
+              <span class="proj-go" aria-hidden="true"><Icon name="arrowUpRight" size={18} /></span>
+            </div>
+            <div class="proj-meta">
+              <div class="proj-name">{p.name}</div>
+              <div class="proj-tag">{p.tag}</div>
+            </div>
+            <div class="proj-foot">
+              <span class="proj-cat">{p.cat}</span>
+              <span class="proj-ext" aria-hidden="true">Visit site <i>↗</i></span>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+
+    <div class="port-more" data-reveal>
+      <a class="btn-ghost" href="/work" data-cursor="Open">
+        <Icon name="layers" size={18} />
+        See all {CLIENT_PROJECTS.length} projects
+        <Icon name="arrow" size={15} />
+      </a>
+    </div>
+  </div>
+</section>

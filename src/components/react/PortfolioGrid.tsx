@@ -5,7 +5,7 @@ import shots from '@/content/shots.json';
 import { enter, spring, springSoft, stagger } from '@/lib/motion';
 import Icon from './Icon';
 
-const PAGE = 12;
+const DEFAULT_PAGE = 12;
 
 type Shot = { w: number; h: number };
 const SHOTS = shots as Record<string, Shot>;
@@ -99,9 +99,9 @@ function ProjectCard({ p }: { p: Project }) {
  * filter changes, so switching category animates each card to its new slot
  * instead of tearing the grid down and rebuilding it.
  */
-export default function PortfolioGrid() {
+export default function PortfolioGrid({ pageSize = DEFAULT_PAGE }: { pageSize?: number }) {
   const [filter, setFilter] = useState<string>('All');
-  const [limit, setLimit] = useState(PAGE);
+  const [limit, setLimit] = useState(pageSize);
   const still = useReducedMotion();
 
   const list = useMemo(
@@ -110,7 +110,7 @@ export default function PortfolioGrid() {
   );
   const shown = list.slice(0, limit);
 
-  useEffect(() => setLimit(PAGE), [filter]);
+  useEffect(() => setLimit(pageSize), [filter, pageSize]);
 
   return (
     <>
@@ -168,7 +168,7 @@ export default function PortfolioGrid() {
 
       {limit < list.length && (
         <div className="port-more">
-          <button type="button" className="btn-more" onClick={() => setLimit((l) => l + PAGE)}>
+          <button type="button" className="btn-more" onClick={() => setLimit((l) => l + pageSize)}>
             <Icon name="plus" size={16} /> Show more ({list.length - limit})
           </button>
         </div>

@@ -1,0 +1,205 @@
+---
+import Base from '@/layouts/Base.astro';
+import { SITE } from '@/content/site';
+import { SERVICES, type Service } from '@/content/services';
+import Kicker from '@/components/astro/Kicker.astro';
+import Icon from '@/components/astro/Icon.astro';
+import Workflow from '@/components/astro/Workflow.astro';
+import Footer from '@/components/astro/Footer.astro';
+import PageNav from '@/components/astro/PageNav.astro';
+import FloatingNav from '@/components/react/FloatingNav';
+
+export function getStaticPaths() {
+  return SERVICES.map((service) => ({
+    params: { slug: service.slug },
+    props: { service },
+  }));
+}
+
+interface Props { service: Service }
+const { service } = Astro.props;
+
+// Neighbours for the prev/next footer, so a visitor can browse the range.
+const i = SERVICES.findIndex((s) => s.slug === service.slug);
+const prev = SERVICES[(i - 1 + SERVICES.length) % SERVICES.length];
+const next = SERVICES[(i + 1) % SERVICES.length];
+
+const title = `${service.nav} — ${SITE.name}`;
+const description = service.tagline;
+const url = new URL(`/services/${service.slug}`, Astro.site).href;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: service.nav,
+    description: service.tagline,
+    url,
+    serviceType: service.nav,
+    provider: { '@id': `${Astro.site}#person` },
+    areaServed: ['PH', 'Worldwide'],
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: `${service.nav} deliverables`,
+      itemListElement: service.deliverables.map((d) => ({
+        '@type': 'Offer',
+        itemOffered: { '@type': 'Service', name: d },
+      })),
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: service.faq.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: Astro.site?.href },
+      { '@type': 'ListItem', position: 2, name: 'Services', item: new URL('/services', Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: service.nav, item: url },
+    ],
+  },
+];
+---
+<Base title={title} description={description} jsonLd={jsonLd}>
+  <FloatingNav client:idle pathname={Astro.url.pathname} />
+  <PageNav />
+
+  <main id="top">
+    <header class="band svc-hero">
+      <div class="svc-hero-bg" aria-hidden="true">
+        <img src={`/services/${service.img}.webp`} alt="" width="760" height="567" loading="eager" />
+      </div>
+
+      <div class="wrap svc-hero-grid">
+        <div data-reveal>
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="/services">Services</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{service.nav}</span>
+          </nav>
+
+          <div class="svc-hero-kicker">
+            <Kicker>{service.nav}</Kicker>
+            {service.isNew && <span class="svc-tile-new">New</span>}
+          </div>
+
+          <h1 class="page-title">
+            {service.title[0]}<br /><span class="muted-h">{service.title[1]}</span>
+          </h1>
+          <p class="section-sub page-lead">{service.lead}</p>
+
+          <div class="svc-hero-actions">
+            <a
+              class="btn-primary"
+              href={SITE.webapp.bookingUrl}
+              target="_blank"
+              rel="noreferrer noopener"
+              data-cursor="Book ↗"
+            >
+              Book a discovery call
+              <Icon name="arrowUpRight" size={17} />
+            </a>
+            <a class="btn-ghost" href="/work">
+              <Icon name="layers" size={18} />
+              See the work
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="band svc-outcomes" aria-labelledby="outcomes-h">
+      <div class="wrap">
+        <div data-reveal>
+          <Kicker light>What you get</Kicker>
+          <h2 class="section-title" id="outcomes-h">The part that<br /><span class="muted-h">actually matters.</span></h2>
+        </div>
+        <ul class="ai-grid svc-outcome-grid">
+          {service.outcomes.map((o, n) => (
+            <li class="ai-card" data-reveal data-reveal-group="svc-outcomes">
+              <span class="ai-num" aria-hidden="true">0{n + 1}</span>
+              <span class="ai-icon" aria-hidden="true"><Icon name={o.icon} size={24} /></span>
+              <h3 class="ai-title">{o.title}</h3>
+              <p class="ai-blurb">{o.blurb}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="band svc-detail" aria-label="Deliverables and tools">
+      <div class="wrap svc-detail-grid">
+        <div data-reveal>
+          <Kicker light>Deliverables</Kicker>
+          <h2 class="section-title svc-detail-h">In the box.</h2>
+          <ul class="svc-deliverables">
+            {service.deliverables.map((d) => (
+              <li>
+                <span class="svc-check" aria-hidden="true"><Icon name="check" size={14} stroke={2.6} /></span>
+                {d}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div data-reveal style="--reveal-delay: 120ms">
+          <div class="svc-fit">
+            <h3 class="svc-fit-h">Best suited to</h3>
+            <p class="svc-fit-p">{service.bestFor}</p>
+          </div>
+
+          <div class="svc-stack">
+            <span class="apps-stack-label">Built with</span>
+            <div class="apps-stack-chips">
+              {service.stack.map((t) => <span class="chip">{t}</span>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <Workflow />
+
+    <section class="band svc-faq" aria-labelledby="faq-h">
+      <div class="wrap svc-faq-grid">
+        <div data-reveal>
+          <Kicker light>Questions</Kicker>
+          <h2 class="section-title" id="faq-h">Straight<br /><span class="muted-h">answers.</span></h2>
+        </div>
+        <div class="svc-faq-list">
+          {service.faq.map((f) => (
+            <details class="faq-item" data-reveal data-reveal-group="faq">
+              <summary>
+                <span>{f.q}</span>
+                <span class="faq-mark" aria-hidden="true"><Icon name="plus" size={16} /></span>
+              </summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <nav class="band svc-switch" aria-label="Other services">
+      <div class="wrap svc-switch-grid">
+        <a class="svc-switch-link" href={`/services/${prev.slug}`}>
+          <span class="svc-switch-dir"><Icon name="arrow" size={15} /> Previous</span>
+          <span class="svc-switch-name">{prev.nav}</span>
+        </a>
+        <a class="svc-switch-link svc-switch-link--next" href={`/services/${next.slug}`}>
+          <span class="svc-switch-dir">Next <Icon name="arrow" size={15} /></span>
+          <span class="svc-switch-name">{next.nav}</span>
+        </a>
+      </div>
+    </nav>
+  </main>
+
+  <Footer />
+</Base>

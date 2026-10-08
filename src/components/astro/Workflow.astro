@@ -1,0 +1,48 @@
+---
+import { WORKFLOW } from '@/content/services';
+import Kicker from './Kicker.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  /** Heading override, so the homepage and service pages can frame it differently. */
+  heading?: string;
+  sub?: string;
+}
+const {
+  heading = 'How working together goes.',
+  sub = 'No mystery, no month-long silences. Five steps, and you can stop after any of them.',
+} = Astro.props;
+---
+<section class="band workflow" aria-labelledby="workflow-h">
+  <div class="wrap">
+    <div class="wf-head" data-reveal>
+      <div>
+        <Kicker light>Process</Kicker>
+        <h2 class="section-title" id="workflow-h" set:html={heading.replace(/\n/, '<br />')} />
+      </div>
+      <p class="section-sub">{sub}</p>
+    </div>
+
+    <ol class="wf-track">
+      {WORKFLOW.map((step) => (
+        <li class="wf-step" data-reveal data-reveal-group="workflow">
+          <div class="wf-marker" aria-hidden="true">
+            <span class="wf-n">{step.n}</span>
+            <span class="wf-line"></span>
+          </div>
+          <div class="wf-body">
+            <div class="wf-top">
+              <h3 class="wf-title">{step.title}</h3>
+              <span class="wf-when">{step.when}</span>
+            </div>
+            <p class="wf-blurb">{step.blurb}</p>
+            <p class="wf-output">
+              <span class="wf-out-icon" aria-hidden="true"><Icon name={step.icon} size={15} /></span>
+              <span><span class="wf-out-label">You get:</span> {step.output}</span>
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

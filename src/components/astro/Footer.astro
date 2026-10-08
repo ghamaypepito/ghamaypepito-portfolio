@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { SITE } from '@/content/site';
+import Icon from './Icon.astro';
 import avatar from '@/assets/avatar.jpg';
 
 const year = new Date().getFullYear();
@@ -18,7 +19,7 @@ const year = new Date().getFullYear();
         class="soc"
         aria-label={`${SITE.name} on ${s.label}`}
       >
-        <span aria-hidden="true">{s.short}</span>
+        <Icon name={s.icon} size={18} />
       </a>
     ))}
   </div>

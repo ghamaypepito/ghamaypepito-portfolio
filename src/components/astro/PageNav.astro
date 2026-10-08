@@ -1,0 +1,24 @@
+---
+/**
+ * Static top nav for subpages. The homepage has its own nav inside the hero;
+ * every other page needs one that is present before the floating pill appears.
+ */
+import { NAV_LINKS, isActive } from '@/lib/nav';
+import BrandMark from './BrandMark.astro';
+
+const path = Astro.url.pathname;
+---
+<nav class="nav page-nav" aria-label="Primary">
+  <a href="/" class="brand" aria-label="Ghamay Pepito — home">
+    <span class="brand-mark"><BrandMark size={34} /></span>
+  </a>
+  <div class="nav-links">
+    {NAV_LINKS.map((l) => (
+      <a
+        href={l.href}
+        class:list={['nav-link', isActive(l.href, path) && 'is-active']}
+        aria-current={isActive(l.href, path) ? 'page' : undefined}
+      >{l.label}</a>
+    ))}
+  </div>
+</nav>

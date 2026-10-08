@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { SITE } from '@/content/site';
-import { SECTIONS, EXTRA_SECTIONS, scrollToSection } from '@/lib/scroll';
+import { scrollToSection } from '@/lib/scroll';
+import { NAV_LINKS, HOME_SECTIONS } from '@/lib/nav';
 import { spring, fade } from '@/lib/motion';
 import Icon from './Icon';
 import type { IconName } from '@/lib/icons';
@@ -33,13 +34,27 @@ export default function CommandPalette({
   const still = useReducedMotion();
 
   const commands = useMemo<Command[]>(() => {
-    const jump: Command[] = [...SECTIONS, ...EXTRA_SECTIONS].map((s) => ({
-      id: `go-${s.id}`,
-      label: `Go to ${s.label}`,
-      group: 'Navigate',
-      icon: 'corner',
-      run: () => scrollToSection(s.id),
-    }));
+    // Routes navigate; homepage sections scroll when already there, and
+    // otherwise load the homepage at that anchor.
+    const jump: Command[] = [
+      ...NAV_LINKS.filter((l) => !l.anchor).map((l) => ({
+        id: `nav-${l.href}`,
+        label: `Go to ${l.label}`,
+        group: 'Navigate',
+        icon: 'corner' as IconName,
+        run: () => { window.location.href = l.href; },
+      })),
+      ...HOME_SECTIONS.map((s) => ({
+        id: `go-${s.id}`,
+        label: `Go to ${s.label}`,
+        group: 'Navigate',
+        icon: 'corner' as IconName,
+        run: () => {
+          if (window.location.pathname === '/') scrollToSection(s.id);
+          else window.location.href = `/#${s.id}`;
+        },
+      })),
+    ];
 
     const reach: Command[] = [
       {

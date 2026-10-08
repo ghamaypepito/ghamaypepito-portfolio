@@ -1,5 +1,6 @@
 ---
 import Kicker from './Kicker.astro';
+import Icon from './Icon.astro';
 import ServicesGrid from '../react/ServicesGrid';
 ---
 <section class="band services" id="services" aria-labelledby="services-h">
@@ -10,10 +11,15 @@ import ServicesGrid from '../react/ServicesGrid';
         <h2 class="section-title" id="services-h">
           What I do.<br /><span class="muted-h">Design, build, grow.</span>
         </h2>
-        <p class="section-sub">
-          From the first wireframe to the campaign that fills the funnel — a full
-          digital stack under one roof.
-        </p>
+        <div class="services-head-right">
+          <p class="section-sub">
+            From the first wireframe to the campaign that fills the funnel — a full
+            digital stack under one roof.
+          </p>
+          <a class="link-arrow" href="/services">
+            All seven services <Icon name="arrow" size={16} />
+          </a>
+        </div>
       </div>
     </div>
 

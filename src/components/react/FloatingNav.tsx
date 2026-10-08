@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { SECTIONS, scrollToSection, type SectionId } from '@/lib/scroll';
+import { scrollToSection } from '@/lib/scroll';
+import { NAV_LINKS, isActive } from '@/lib/nav';
 import { spring, springSoft } from '@/lib/motion';
 import { BRAND_MARK } from '@/lib/icons';
 import CommandPalette from './CommandPalette';
@@ -10,12 +11,13 @@ import CommandPalette from './CommandPalette';
  * the active link is a single shared element that travels between targets,
  * rather than a background that fades in and out per link.
  */
-export default function FloatingNav() {
+export default function FloatingNav({ pathname = '/' }: { pathname?: string }) {
+  const onHome = pathname === '/';
   const [visible, setVisible] = useState(false);
   // Below 600px the pill is pinned with left/right instead of being centred,
   // so the -50% x offset must not be applied.
   const [centred, setCentred] = useState(true);
-  const [active, setActive] = useState<SectionId>('work');
+  const [active, setActive] = useState<string>('');
   const [paletteOpen, setPaletteOpen] = useState(false);
   const still = useReducedMotion();
 
@@ -41,13 +43,14 @@ export default function FloatingNav() {
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
-          if (e.isIntersecting) setActive(e.target.id as SectionId);
+          if (e.isIntersecting) setActive(e.target.id);
         }
       },
       { rootMargin: '-45% 0px -45% 0px' },
     );
-    for (const s of SECTIONS) {
-      const el = document.getElementById(s.id);
+    for (const l of NAV_LINKS) {
+      if (!l.anchor) continue;
+      const el = document.getElementById(l.anchor);
       if (el) io.observe(el);
     }
     return () => io.disconnect();
@@ -84,9 +87,9 @@ export default function FloatingNav() {
             style={centred ? { x: '-50%' } : undefined}
           >
             <a
-              href="#top"
+              href="/"
               className="fn-brand"
-              onClick={(e) => go(e, 'top')}
+              onClick={(e) => { if (onHome) go(e, 'top'); }}
               aria-label="Back to top"
               style={{ color: 'var(--accent)' }}
             >
@@ -95,25 +98,34 @@ export default function FloatingNav() {
             </a>
 
             <div className="fn-scroll">
-              {SECTIONS.map((link) => (
-                <span className="fn-linkwrap" key={link.id}>
-                  {active === link.id && (
-                    <motion.span
-                      className="fn-pill"
-                      layoutId="fn-pill"
-                      transition={still ? { duration: 0 } : spring}
-                    />
-                  )}
-                  <a
-                    href={`#${link.id}`}
-                    className={'fn-link' + (active === link.id ? ' is-active' : '')}
-                    aria-current={active === link.id ? 'true' : undefined}
-                    onClick={(e) => go(e, link.id)}
-                  >
-                    {link.label}
-                  </a>
-                </span>
-              ))}
+              {NAV_LINKS.map((link) => {
+                // An anchor is active by scroll position, a route by pathname.
+                const current = link.anchor
+                  ? onHome && active === link.anchor
+                  : isActive(link.href, pathname);
+                return (
+                  <span className="fn-linkwrap" key={link.href}>
+                    {current && (
+                      <motion.span
+                        className="fn-pill"
+                        layoutId="fn-pill"
+                        transition={still ? { duration: 0 } : spring}
+                      />
+                    )}
+                    <a
+                      href={link.href}
+                      className={'fn-link' + (current ? ' is-active' : '')}
+                      aria-current={current ? 'page' : undefined}
+                      onClick={(e) => {
+                        // Only intercept an anchor whose target is on this page.
+                        if (link.anchor && onHome) go(e, link.anchor);
+                      }}
+                    >
+                      {link.label}
+                    </a>
+                  </span>
+                );
+              })}
             </div>
 
             <button
@@ -129,7 +141,7 @@ export default function FloatingNav() {
               </svg>
             </button>
 
-            <a href="#contact" className="fn-cta" onClick={(e) => go(e, 'contact')}>
+            <a href="/#contact" className="fn-cta" onClick={(e) => { if (onHome) go(e, 'contact'); }}>
               Hire me
             </a>
           </motion.nav>

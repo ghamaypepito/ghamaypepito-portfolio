@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { SITE } from '@/content/site';
+import { SERVICES } from '@/content/services';
 import { springSoft } from '@/lib/motion';
 import Icon from './Icon';
 
 /**
- * The four service cards. The amber fill is one element that slides from card
- * to card on hover, so the highlight reads as a single object moving rather
- * than four backgrounds crossfading.
+ * The seven service cards on the homepage, each linking to its own page. The
+ * amber fill is one element that slides between cards on hover, so the
+ * highlight reads as a single object moving rather than seven backgrounds
+ * crossfading.
  */
 export default function ServicesGrid() {
   const [open, setOpen] = useState(0);
@@ -15,14 +16,15 @@ export default function ServicesGrid() {
 
   return (
     <div className="svc-grid" onMouseLeave={() => setOpen(0)}>
-      {SITE.services.map((sv, i) => (
-        <article
-          key={sv.key}
+      {SERVICES.map((sv, i) => (
+        <a
+          key={sv.slug}
+          href={`/services/${sv.slug}`}
           className={'svc-card reveal-child' + (open === i ? ' is-open' : '')}
           onMouseEnter={() => setOpen(i)}
           onFocus={() => setOpen(i)}
-          tabIndex={0}
-          aria-label={`${sv.title.join(' ')} — ${sv.blurb}`}
+          data-cursor="Open"
+          aria-label={`${sv.nav} — ${sv.tagline}`}
         >
           {open === i && (
             <motion.span
@@ -48,12 +50,13 @@ export default function ServicesGrid() {
             {sv.title.map((line) => <span key={line}>{line}</span>)}
           </h3>
           <div className="svc-count">{sv.count}</div>
-          <p className="svc-blurb">{sv.blurb}</p>
-          <div className="svc-tools">
-            {sv.tools.map((t) => <span key={t} className="chip">{t}</span>)}
-          </div>
+          <p className="svc-blurb">{sv.tagline}</p>
+          <span className="svc-more">
+            Explore <Icon name="arrow" size={15} />
+          </span>
+          {sv.isNew && <span className="svc-tile-new svc-card-new">New</span>}
           <span className="svc-num" aria-hidden="true">0{i + 1}</span>
-        </article>
+        </a>
       ))}
     </div>
   );

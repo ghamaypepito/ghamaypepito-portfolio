@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { SITE } from '@/content/site';
-import { SECTIONS } from '@/lib/scroll';
+import { NAV_LINKS } from '@/lib/nav';
 import Kicker from './Kicker.astro';
 import BrandMark from './BrandMark.astro';
 import Icon from './Icon.astro';
@@ -18,8 +18,8 @@ const nameLines = ['Ghamay', 'Pepito'];
       <span class="brand-mark"><BrandMark size={34} /></span>
     </a>
     <div class="nav-links">
-      {SECTIONS.map((s, i) => (
-        <a href={`#${s.id}`} class:list={['nav-link', i === 0 && 'is-active']}>{s.label}</a>
+      {NAV_LINKS.map((l) => (
+        <a href={l.href} class="nav-link">{l.label}</a>
       ))}
     </div>
   </nav>
@@ -49,7 +49,7 @@ const nameLines = ['Ghamay', 'Pepito'];
             class="soc"
             aria-label={`${SITE.name} on ${s.label}`}
           >
-            <span aria-hidden="true">{s.short}</span>
+            <Icon name={s.icon} size={18} />
           </a>
         ))}
       </div>

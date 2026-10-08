@@ -5,14 +5,21 @@ import '@/styles/fonts.css';
 import '@/styles/base.css';
 import '@/styles/sections.css';
 import '@/styles/added-sections.css';
+import '@/styles/pages.css';
 import '@/styles/enhancements.css';
 
 interface Props {
   title: string;
   description: string;
+  /**
+   * Page-specific structured data. The Person graph is always emitted; this
+   * replaces the homepage's ProfilePage/Service/ItemList graphs on subpages.
+   */
+  jsonLd?: unknown[];
 }
 
-const { title, description } = Astro.props;
+const { title, description, jsonLd } = Astro.props;
+const pathname = Astro.url.pathname;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL('/og.png', Astro.site).href;
 
@@ -157,9 +164,9 @@ const worksLd = {
     </script>
 
     <script is:inline type="application/ld+json" set:html={JSON.stringify(personLd)} />
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(profileLd)} />
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(servicesLd)} />
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(worksLd)} />
+    {(jsonLd ?? [profileLd, servicesLd, worksLd]).map((graph) => (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(graph)} />
+    ))}
   </head>
 
   <body>

@@ -31,6 +31,10 @@ export const ICON_PATHS = {
   chart: '<path d="M3 3v18h18"/><polyline points="7 15 11 10 15 13 20 6"/>',
   wand: '<path d="M15 4V2M15 10V8M12.5 6h-2M19.5 6h-2M17 4.5 15.6 5.9M17 7.5l-1.4-1.4M13 4.5l1.4 1.4M13 7.5l1.4-1.4"/><path d="M4 20 14 10l1.6 1.6L5.6 21.6 4 20Z"/>',
   target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/>',
+  instagram: '<rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/>',
+  linkedin: '<path d="M4.5 9.5v10M4.5 5.6v.02" /><path d="M10 19.5v-5.6a2.9 2.9 0 0 1 5.8 0v5.6"/><path d="M10 9.5v10"/>',
+  github: '<path d="M9 19.5c-4.3 1.3-4.3-2.2-6-2.6m12 5.1v-3.3a2.9 2.9 0 0 0-.8-2.2c2.7-.3 5.5-1.3 5.5-6a4.7 4.7 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.3s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.2 3.7 5.1 4 5.1 4a4.3 4.3 0 0 0-.1 3.3A4.7 4.7 0 0 0 3.7 10.5c0 4.7 2.8 5.7 5.5 6a2.9 2.9 0 0 0-.8 2.2v3.3"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z"/>',
   rocket: '<path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.74-.83.73-2.1-.07-2.9a2.05 2.05 0 0 0-2.93-.1Z"/><path d="M12 15 9 12a12 12 0 0 1 7-9 12 12 0 0 1 5 5 12 12 0 0 1-9 7Z"/><circle cx="15" cy="9" r="1.6"/>',
 } as const;
 

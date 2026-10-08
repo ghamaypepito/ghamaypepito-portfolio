@@ -1,0 +1,216 @@
+/* ============================================================================
+   Styles for the multi-page surfaces: service index, service detail, work.
+   ========================================================================== */
+
+/* ---------- SHARED PAGE CHROME ---------- */
+.page-nav { padding-top: 28px; padding-bottom: 8px; }
+.page-hero { padding-top: 56px; padding-bottom: 72px; }
+.page-title {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: clamp(38px, 5.6vw, 76px); line-height: 1.02;
+  letter-spacing: -.035em;
+}
+.page-lead { max-width: 560px; font-size: 18px; }
+
+.crumbs {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 26px;
+  font-family: 'Sora', sans-serif; font-size: 13px; color: var(--muted-2);
+}
+.crumbs a { color: var(--muted); transition: color var(--dur-fast) var(--ease-out-quart); }
+.crumbs a:hover { color: var(--accent); }
+
+/* ---------- SERVICE INDEX ---------- */
+.svc-index { background: var(--bg-2); padding-top: 72px; }
+.svc-index-grid {
+  list-style: none;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+.svc-tile { display: flex; }
+.svc-tile-link {
+  position: relative; flex: 1;
+  display: flex; flex-direction: column;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 30px;
+  transition: transform var(--dur-slow) var(--ease-out-quart),
+              border-color var(--dur-slow) var(--ease-out-quart),
+              background var(--dur-slow) var(--ease-out-quart);
+}
+.svc-tile-link:hover {
+  transform: translateY(-6px);
+  border-color: rgba(242, 179, 61, .45);
+  background: var(--panel-2);
+}
+.svc-tile-icon {
+  display: grid; place-items: center;
+  width: 52px; height: 52px; border-radius: 15px;
+  background: var(--accent-soft); color: var(--accent); margin-bottom: 24px;
+}
+.svc-tile-new {
+  position: absolute; top: 26px; right: 26px;
+  font-family: 'Sora', sans-serif; font-size: 10.5px; font-weight: 800;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink); background: var(--accent);
+  padding: 4px 9px; border-radius: 6px;
+}
+.svc-tile-title { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+.svc-tile-blurb { color: var(--muted); font-size: 14.5px; flex: 1; margin-bottom: 24px; }
+.svc-tile-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding-top: 18px; border-top: 1px solid var(--line);
+}
+.svc-tile-count {
+  font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--muted-2);
+}
+.svc-tile-go {
+  display: grid; place-items: center; width: 32px; height: 32px;
+  border-radius: 10px; background: var(--accent-soft); color: var(--accent);
+  transition: transform var(--dur-base) var(--ease-spring),
+              background var(--dur-base) var(--ease-out-quart),
+              color var(--dur-base) var(--ease-out-quart);
+}
+.svc-tile-link:hover .svc-tile-go {
+  transform: translateX(3px); background: var(--accent); color: var(--ink);
+}
+
+/* "New" badge on the homepage service cards. */
+.svc-card-new { position: absolute; top: 16px; left: 20px; z-index: 3; }
+.svc-more {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 18px;
+  font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700;
+  color: var(--accent); transition: gap var(--dur-base) var(--ease-out-quart);
+}
+.svc-card:hover .svc-more { gap: 13px; }
+.svc-card.is-open .svc-more { color: var(--ink); }
+.services-head-right { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
+.services-head-right .section-sub { margin-top: 0; }
+
+/* ---------- SERVICE DETAIL ---------- */
+.svc-hero {
+  position: relative; overflow: hidden; isolation: isolate;
+  background: var(--bg-2); padding-top: 56px; padding-bottom: 80px;
+}
+.svc-hero-bg { position: absolute; inset: 0; z-index: -1; }
+.svc-hero-bg img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+.svc-hero-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(100deg, rgba(27,31,43,.97) 0%, rgba(27,31,43,.92) 48%, rgba(27,31,43,.72) 100%),
+    linear-gradient(180deg, transparent 40%, rgba(27,31,43,.85));
+}
+.svc-hero-grid { position: relative; }
+.svc-hero-kicker { display: flex; align-items: center; gap: 14px; }
+.svc-hero-kicker .svc-tile-new { position: static; }
+.svc-hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 36px; }
+
+.svc-outcomes { background: var(--bg); }
+.svc-outcome-grid { margin-top: 48px; }
+
+.svc-detail { background: var(--bg-2); }
+.svc-detail-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 70px; }
+.svc-detail-h { font-size: clamp(30px, 3.4vw, 44px); margin-bottom: 30px; }
+.svc-deliverables { list-style: none; display: flex; flex-direction: column; gap: 15px; }
+.svc-deliverables li {
+  display: flex; gap: 14px; align-items: flex-start;
+  color: var(--text); font-size: 15.5px;
+}
+.svc-check {
+  display: grid; place-items: center; flex-shrink: 0;
+  width: 24px; height: 24px; border-radius: 8px;
+  background: var(--accent-soft); color: var(--accent); margin-top: 1px;
+}
+.svc-fit {
+  background: var(--panel); border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--r) var(--r) 0; padding: 26px 28px;
+}
+.svc-fit-h {
+  font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+  margin-bottom: 12px;
+}
+.svc-fit-p { color: var(--muted); font-size: 15px; }
+.svc-stack { margin-top: 34px; display: flex; flex-direction: column; gap: 14px; }
+
+/* ---------- FAQ ---------- */
+.svc-faq { background: var(--bg); }
+.svc-faq-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 60px; align-items: start; }
+.svc-faq-list { display: flex; flex-direction: column; }
+.faq-item { border-bottom: 1px solid var(--line); }
+.faq-item summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  padding: 24px 0; cursor: pointer; list-style: none;
+  font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 600;
+  color: var(--text);
+  transition: color var(--dur-base) var(--ease-out-quart);
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary:hover { color: var(--accent); }
+.faq-mark {
+  display: grid; place-items: center; flex-shrink: 0;
+  width: 30px; height: 30px; border-radius: 9px;
+  border: 1px solid var(--line); color: var(--accent);
+  transition: transform var(--dur-base) var(--ease-spring),
+              background var(--dur-base) var(--ease-out-quart);
+}
+.faq-item[open] .faq-mark { transform: rotate(45deg); background: var(--accent-soft); }
+.faq-item p { color: var(--muted); font-size: 15px; padding-bottom: 26px; max-width: 640px; }
+
+/* ---------- PREV / NEXT ---------- */
+.svc-switch { background: var(--bg-2); padding: 60px 0; }
+.svc-switch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.svc-switch-link {
+  display: flex; flex-direction: column; gap: 8px;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 26px 30px;
+  transition: border-color var(--dur-base) var(--ease-out-quart),
+              transform var(--dur-base) var(--ease-out-quart);
+}
+.svc-switch-link:hover { border-color: rgba(242, 179, 61, .45); transform: translateY(-3px); }
+.svc-switch-link--next { text-align: right; align-items: flex-end; }
+.svc-switch-dir {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted-2);
+}
+.svc-switch-link .svc-switch-dir svg { transform: rotate(180deg); }
+.svc-switch-link--next .svc-switch-dir svg { transform: none; }
+.svc-switch-name { font-family: 'Sora', sans-serif; font-size: 19px; font-weight: 700; }
+
+/* ---------- SHARED PAGE CTA ---------- */
+.svc-cta { background: var(--bg); }
+.svc-cta-inner {
+  display: grid; grid-template-columns: 1fr auto; gap: 50px;
+  align-items: center;
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-radius: 28px; padding: 56px;
+}
+.svc-cta-inner .section-sub { max-width: 440px; }
+
+/* ---------- WORK PAGE ---------- */
+.work-all { background: var(--bg-2); padding-top: 40px; }
+.work-samples { background: var(--bg); }
+.proj-grid--featured { grid-template-columns: repeat(3, 1fr); }
+.portfolio .port-more .btn-ghost { background: var(--panel); }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 1100px) {
+  .svc-index-grid { grid-template-columns: repeat(2, 1fr); }
+  .proj-grid--featured { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 980px) {
+  .svc-detail-grid, .svc-faq-grid { grid-template-columns: 1fr; gap: 44px; }
+  .svc-cta-inner { grid-template-columns: 1fr; gap: 32px; padding: 40px 32px; }
+  .page-hero { padding-top: 40px; padding-bottom: 56px; }
+}
+@media (max-width: 600px) {
+  .svc-index-grid, .proj-grid--featured, .svc-switch-grid { grid-template-columns: 1fr; }
+  .svc-switch-link--next { text-align: left; align-items: flex-start; }
+  .svc-cta-inner { border-radius: 20px; padding: 32px 22px; }
+}
+
+/* The workflow columns have blurbs of different lengths; pushing the output
+   row to the bottom keeps the divider lines aligned across the track. */
+.wf-step { display: flex; flex-direction: column; }
+.wf-body { display: flex; flex-direction: column; flex: 1; }
+.wf-output { margin-top: auto; }

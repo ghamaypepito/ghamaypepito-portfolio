@@ -1,0 +1,116 @@
+---
+import Base from '@/layouts/Base.astro';
+import { SITE, CLIENT_PROJECTS, SAMPLE_PROJECTS } from '@/content/site';
+import Kicker from '@/components/astro/Kicker.astro';
+import Icon from '@/components/astro/Icon.astro';
+import Footer from '@/components/astro/Footer.astro';
+import PageNav from '@/components/astro/PageNav.astro';
+import FloatingNav from '@/components/react/FloatingNav';
+import PortfolioGrid from '@/components/react/PortfolioGrid';
+
+const title = `Work — ${CLIENT_PROJECTS.length} live client projects | ${SITE.name}`;
+const description = `Every site, store and brand shipped for clients across the Philippines and beyond — ${CLIENT_PROJECTS.length} live projects spanning web design, e-commerce, branding and SEO.`;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Work',
+    description,
+    url: new URL('/work', Astro.site).href,
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: CLIENT_PROJECTS.length,
+      itemListElement: CLIENT_PROJECTS.map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'WebSite',
+          name: p.name,
+          url: `https://${p.url}`,
+          about: p.cat,
+          creator: { '@id': `${Astro.site}#person` },
+        },
+      })),
+    },
+  },
+];
+---
+<Base title={title} description={description} jsonLd={jsonLd}>
+  <FloatingNav client:idle pathname={Astro.url.pathname} />
+  <PageNav />
+
+  <main id="top">
+    <header class="band page-hero">
+      <div class="wrap">
+        <div data-reveal>
+          <Kicker>Portfolio</Kicker>
+          <h1 class="page-title">
+            {CLIENT_PROJECTS.length} live projects.<br />
+            <span class="muted-h">Every one of them real.</span>
+          </h1>
+          <p class="section-sub page-lead">
+            A decade of websites, stores and brands shipped for clients across the
+            Philippines and beyond. Each card links to the live site — not a mockup,
+            not a case study of something that never launched.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <section class="band work-all" id="work" aria-label="All projects">
+      <div class="wrap">
+        <div data-reveal>
+          <PortfolioGrid client:visible pageSize={16} />
+        </div>
+      </div>
+    </section>
+
+    {SAMPLE_PROJECTS.length > 0 && (
+      <section class="band work-samples" aria-labelledby="samples-h">
+        <div class="wrap">
+          <div data-reveal>
+            <Kicker light>Concepts</Kicker>
+            <h2 class="section-title" id="samples-h">
+              Built to show,<br /><span class="muted-h">not to invoice.</span>
+            </h2>
+            <p class="section-sub">
+              Demos and concept builds made to prove out an idea. Not client engagements —
+              labelled so there is no confusion about which is which.
+            </p>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <section class="band svc-cta" aria-label="Get started">
+      <div class="wrap svc-cta-inner">
+        <div data-reveal>
+          <h2 class="section-title">Want yours<br /><span class="muted-h">on this page?</span></h2>
+          <p class="section-sub">
+            Tell me what you are building and where you want it to go. I will come back
+            with a plan and an honest estimate.
+          </p>
+        </div>
+        <div class="svc-hero-actions" data-reveal>
+          <a
+            class="btn-primary"
+            href={SITE.webapp.bookingUrl}
+            target="_blank"
+            rel="noreferrer noopener"
+            data-cursor="Book ↗"
+          >
+            Book a discovery call
+            <Icon name="arrowUpRight" size={17} />
+          </a>
+          <a class="btn-ghost" href="/#contact">
+            <Icon name="mail" size={18} />
+            Send a message
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Base>

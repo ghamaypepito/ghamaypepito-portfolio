@@ -4,13 +4,14 @@
  * missing field breaks the build rather than the page.
  */
 
-export type Social = { label: string; short: string; href: string };
+export type Social = { label: string; short: string; href: string; icon: IconName };
 export type Stat = { value: number; suffix: string; label: [string, string] };
 export type IconName =
   | 'code' | 'spark' | 'pen' | 'bolt' | 'arrow' | 'arrowUpRight'
   | 'mail' | 'phone' | 'pin' | 'quote' | 'cap' | 'plus' | 'search' | 'close'
   | 'window' | 'layers' | 'flow' | 'calendar' | 'users' | 'funnel'
-  | 'chart' | 'wand' | 'target' | 'rocket';
+  | 'chart' | 'wand' | 'target' | 'rocket'
+  | 'instagram' | 'linkedin' | 'github' | 'globe';
 
 export type Service = {
   key: string;
@@ -56,6 +57,17 @@ export type Project = {
   url: string;
   cat: ProjectCategory;
   tag: string;
+  /** Shown on the homepage. Exactly three should carry this. */
+  featured?: boolean;
+  /**
+   * 'sample' marks a demo or concept build made to show capability rather
+   * than paid client work. The grid labels these so the two are never
+   * confused — a prospect assuming a demo was a client engagement is a
+   * trust problem waiting to happen.
+   */
+  kind?: 'sample';
+  /** Optional one-liner, mainly useful for samples that have no brand behind them. */
+  summary?: string;
 };
 
 export const SITE = {
@@ -80,9 +92,9 @@ export const SITE = {
   region: 'Central Visayas',
   country: 'PH',
   socials: [
-    { label: 'Instagram', short: 'IG', href: 'https://instagram.com/ghamaypepito' },
-    { label: 'LinkedIn', short: 'IN', href: 'https://www.linkedin.com/in/emeteriopepito/' },
-    { label: 'Website', short: 'WB', href: 'https://ghamaypepito.com' },
+    { label: 'LinkedIn', short: 'IN', href: 'https://www.linkedin.com/in/emeteriopepito/', icon: 'linkedin' },
+    { label: 'GitHub', short: 'GH', href: 'https://github.com/ghamaypepito', icon: 'github' },
+    { label: 'Instagram', short: 'IG', href: 'https://instagram.com/ghamaypepito', icon: 'instagram' },
   ] satisfies Social[],
 
   stats: [
@@ -357,18 +369,18 @@ export const SITE = {
   ] satisfies Testimonial[],
 
   projects: [
-    { name: 'Outremer Catamaran', url: 'catamaran-outremer.com', cat: 'Web Design', tag: 'Marine · Web' },
+    { name: 'Outremer Catamaran', url: 'catamaran-outremer.com', cat: 'Web Design', tag: 'Marine · Web', featured: true },
     { name: 'AFSA Industries', url: 'afsaindustries.com', cat: 'Web Design', tag: 'Industrial · Corporate' },
     { name: 'Auxesis Review', url: 'auxesisreview.com', cat: 'Web Design', tag: 'Education · Review' },
     { name: 'Cebu Car Rentals', url: 'cebucarrentals.com', cat: 'SEO', tag: 'Travel · SEO' },
     { name: 'Dialed In Web', url: 'dialedinweb.com', cat: 'Branding', tag: 'Agency · Brand' },
     { name: 'Milestone Magazine', url: 'milestonemagazine.com', cat: 'Web Design', tag: 'Publishing · Editorial' },
     { name: 'SpeechMed', url: 'speechmed.com', cat: 'Web Design', tag: 'Healthcare · Web' },
-    { name: 'Thumb AI', url: 'thumbai.com', cat: 'Branding', tag: 'Tech · Brand + Web' },
+    { name: 'Thumb AI', url: 'thumbai.com', cat: 'Branding', tag: 'Tech · Brand + Web', featured: true },
     { name: 'Crystha Shayne', url: 'crysthashayne.com', cat: 'Web Design', tag: 'Personal · Portfolio' },
     { name: 'Gold Fortune Textile', url: 'goldfortunetextile.com', cat: 'E-Commerce', tag: 'Textile · Shop' },
     { name: 'Southside Studio', url: 'southsidestudio.ph', cat: 'Branding', tag: 'Creative · Studio' },
-    { name: 'ProShade PH', url: 'proshadeph.com', cat: 'E-Commerce', tag: 'Retail · Shop' },
+    { name: 'ProShade PH', url: 'proshadeph.com', cat: 'E-Commerce', tag: 'Retail · Shop', featured: true },
     { name: 'Lily Moms', url: 'lilymoms.com', cat: 'E-Commerce', tag: 'Lifestyle · Shop' },
     { name: 'Servi-Tek', url: 'servi-tek.net', cat: 'SEO', tag: 'Corporate · SEO' },
     { name: 'Ranyan', url: 'ranyan.com', cat: 'Web Design', tag: 'Business · Web' },
@@ -407,6 +419,21 @@ export function countFor(cat: string): number {
     ? SITE.projects.length
     : SITE.projects.filter((p) => p.cat === cat).length;
 }
+
+/** The three projects highlighted on the homepage. */
+export const FEATURED_PROJECTS = (SITE.projects as readonly Project[]).filter(
+  (p) => p.featured,
+);
+
+/** Real client work, excluding demo and concept builds. */
+export const CLIENT_PROJECTS = (SITE.projects as readonly Project[]).filter(
+  (p) => p.kind !== 'sample',
+);
+
+/** Demo and concept builds. */
+export const SAMPLE_PROJECTS = (SITE.projects as readonly Project[]).filter(
+  (p) => p.kind === 'sample',
+);
 
 /** Stable slug used for screenshot filenames. */
 export function slugFor(url: string): string {
