@@ -12,8 +12,8 @@ export type NavLink = {
 };
 
 export const NAV_LINKS: NavLink[] = [
-  { label: 'Services', href: '/services' },
-  { label: 'Work', href: '/work' },
+  { label: 'Services', href: '/services/' },
+  { label: 'Work', href: '/work/' },
   { label: 'About', href: '/#about', anchor: 'about' },
   { label: 'Contact', href: '/#contact', anchor: 'contact' },
 ];
@@ -27,9 +27,16 @@ export const HOME_SECTIONS = [
   { id: 'contact', label: 'Contact' },
 ] as const;
 
-/** True when the given href points at the page currently being viewed. */
+/**
+ * True when the given href points at the page currently being viewed.
+ * Trailing slashes are normalised, since the site serves '/services/' while a
+ * link may be written either way.
+ */
 export function isActive(href: string, pathname: string): boolean {
   if (href.startsWith('/#')) return false;
-  if (href === '/') return pathname === '/';
-  return pathname === href || pathname.startsWith(`${href}/`);
+  const norm = (s: string) => (s !== '/' && s.endsWith('/') ? s.slice(0, -1) : s);
+  const h = norm(href);
+  const p = norm(pathname);
+  if (h === '/') return p === '/';
+  return p === h || p.startsWith(`${h}/`);
 }

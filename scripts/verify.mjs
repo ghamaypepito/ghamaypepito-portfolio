@@ -33,7 +33,8 @@ if (!EXPECTED_PROJECTS || !SERVICE_SLUGS.length || !BOOKING_URL) {
   throw new Error('Could not read expectations from src/content');
 }
 
-const ROUTES = ['/', '/services', '/work', ...SERVICE_SLUGS.map((s) => `/services/${s}`)];
+// Trailing slashes match astro.config's trailingSlash: 'always'.
+const ROUTES = ['/', '/services/', '/work/', ...SERVICE_SLUGS.map((s) => `/services/${s}/`)];
 
 await mkdir(OUT, { recursive: true });
 const browser = await chromium.launch();
@@ -79,6 +80,9 @@ for (const route of ROUTES) {
         (a) => !(a.getAttribute('rel') || '').includes('noopener'),
       ).length,
       canonical: document.querySelector('link[rel=canonical]')?.href ?? null,
+      slashless: [...document.querySelectorAll('a[href^="/"]')]
+        .map((a) => a.getAttribute('href'))
+        .filter((h) => !h.startsWith('/#') && h !== '/' && !/\.[a-z0-9]+$/i.test(h.split(/[?#]/)[0]) && !h.split(/[?#]/)[0].endsWith('/')),
       jsonLd: document.querySelectorAll('script[type="application/ld+json"]').length,
     };
   });
@@ -90,6 +94,7 @@ for (const route of ROUTES) {
   expect(`${route} has nothing stranded invisible`, r.stranded === 0);
   expect(`${route} external links carry rel=noopener`, r.unsafeLinks === 0);
   expect(`${route} emits structured data`, r.jsonLd > 0);
+  expect(`${route} has no internal link that would 308 (${r.slashless.slice(0, 3)})`, r.slashless.length === 0);
   expect(`${route} console is clean`, errors.length === 0);
   if (errors.length) console.error(errors.slice(0, 3).join('\n'));
 
@@ -114,7 +119,7 @@ checks.routes = routeReport.map((r) => `${r.route} [${r.status}]`);
   );
   checks.homeFeatured = await page.locator('#work .proj').count();
   checks.homeWorkflowSteps = await page.locator('.wf-step').count();
-  checks.homeSeeAll = await page.locator('a[href="/work"]').count();
+  checks.homeSeeAll = await page.locator('a[href="/work/"]').count();
   checks.homeBookingLinks = await page.evaluate(
     (url) => [...document.querySelectorAll('a')].filter((a) => a.href === url).length,
     BOOKING_URL,
@@ -132,11 +137,11 @@ checks.routes = routeReport.map((r) => `${r.route} [${r.status}]`);
 /* --- 3. /services: one tile per service ----------------------------------- */
 {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
-  await page.goto(`${BASE}/services`, { waitUntil: 'networkidle' });
+  await page.goto(`${BASE}/services/`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(1200);
   checks.serviceTiles = await page.locator('.svc-tile-link').count();
   checks.serviceTilesLinked = await page.evaluate(
-    (slugs) => slugs.filter((s) => document.querySelector(`a[href="/services/${s}"]`)).length,
+    (slugs) => slugs.filter((s) => document.querySelector(`a[href="/services/${s}/"]`)).length,
     SERVICE_SLUGS,
   );
   checks.newBadges = await page.locator('.svc-tile-new').count();
@@ -152,7 +157,7 @@ checks.routes = routeReport.map((r) => `${r.route} [${r.status}]`);
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   const thin = [];
   for (const slug of SERVICE_SLUGS) {
-    await page.goto(`${BASE}/services/${slug}`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE}/services/${slug}/`, { waitUntil: 'networkidle' });
     await page.waitForTimeout(700);
     const r = await page.evaluate(() => ({
       outcomes: document.querySelectorAll('.svc-outcome-grid .ai-card').length,
@@ -174,7 +179,7 @@ checks.routes = routeReport.map((r) => `${r.route} [${r.status}]`);
 /* --- 5. /work: the full grid, filtering, and every card links out --------- */
 {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
-  await page.goto(`${BASE}/work`, { waitUntil: 'networkidle' });
+  await page.goto(`${BASE}/work/`, { waitUntil: 'networkidle' });
   await page.addStyleTag({ content: 'html{scroll-behavior:auto !important}' });
   await page.waitForTimeout(1500);
 
@@ -202,7 +207,7 @@ checks.routes = routeReport.map((r) => `${r.route} [${r.status}]`);
 }
 
 /* --- 6. reduced motion and no-JavaScript, on the two richest pages -------- */
-for (const route of ['/', '/services/ai-agents']) {
+for (const route of ['/', '/services/ai-agents/']) {
   const still = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
   const sp = await still.newPage();
   await sp.goto(`${BASE}${route}`, { waitUntil: 'networkidle' });

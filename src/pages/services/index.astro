@@ -64,7 +64,7 @@ const jsonLd = [
         <ul class="svc-index-grid">
           {SERVICES.map((s) => (
             <li class="svc-tile" data-reveal data-reveal-group="svc-index">
-              <a class="svc-tile-link" href={`/services/${s.slug}`} data-cursor="Open">
+              <a class="svc-tile-link" href={`/services/${s.slug}/`} data-cursor="Open">
                 <span class="svc-tile-icon" aria-hidden="true"><Icon name={s.icon} size={24} /></span>
                 {s.isNew && <span class="svc-tile-new">New</span>}
                 <h2 class="svc-tile-title">{s.nav}</h2>

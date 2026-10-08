@@ -80,7 +80,7 @@ const jsonLd = [
       <div class="wrap svc-hero-grid">
         <div data-reveal>
           <nav class="crumbs" aria-label="Breadcrumb">
-            <a href="/services">Services</a>
+            <a href="/services/">Services</a>
             <span aria-hidden="true">/</span>
             <span aria-current="page">{service.nav}</span>
           </nav>
@@ -106,7 +106,7 @@ const jsonLd = [
               Book a discovery call
               <Icon name="arrowUpRight" size={17} />
             </a>
-            <a class="btn-ghost" href="/work">
+            <a class="btn-ghost" href="/work/">
               <Icon name="layers" size={18} />
               See the work
             </a>
@@ -189,11 +189,11 @@ const jsonLd = [
 
     <nav class="band svc-switch" aria-label="Other services">
       <div class="wrap svc-switch-grid">
-        <a class="svc-switch-link" href={`/services/${prev.slug}`}>
+        <a class="svc-switch-link" href={`/services/${prev.slug}/`}>
           <span class="svc-switch-dir"><Icon name="arrow" size={15} /> Previous</span>
           <span class="svc-switch-name">{prev.nav}</span>
         </a>
-        <a class="svc-switch-link svc-switch-link--next" href={`/services/${next.slug}`}>
+        <a class="svc-switch-link svc-switch-link--next" href={`/services/${next.slug}/`}>
           <span class="svc-switch-dir">Next <Icon name="arrow" size={15} /></span>
           <span class="svc-switch-name">{next.nav}</span>
         </a>

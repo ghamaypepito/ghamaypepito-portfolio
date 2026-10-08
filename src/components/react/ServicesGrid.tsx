@@ -19,7 +19,7 @@ export default function ServicesGrid() {
       {SERVICES.map((sv, i) => (
         <a
           key={sv.slug}
-          href={`/services/${sv.slug}`}
+          href={`/services/${sv.slug}/`}
           className={'svc-card reveal-child' + (open === i ? ' is-open' : '')}
           onMouseEnter={() => setOpen(i)}
           onFocus={() => setOpen(i)}
