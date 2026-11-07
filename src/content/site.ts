@@ -266,6 +266,13 @@ export const SITE = {
     footnote: 'A person reviews everything before a client ever sees it. AI sets the pace; it does not sign off on the work.',
   },
 
+  higgsfield: {
+    title: 'Create images and video with Higgsfield.',
+    lead: 'Higgsfield brings AI image creation, video generation and editing together. Use Cinema Studio to shape a shot or Marketing Studio to develop campaign visuals.',
+    affiliateUrl: 'https://higgsfield.ai?fpr=emeterio-24bd99',
+    disclosure: 'Affiliate link. I earn a commission if you make a qualifying purchase through this link.',
+  },
+
   /* ---------------------------------------------------------------------
      GoHighLevel — the white-label portal is a live client-facing product.
      ------------------------------------------------------------------- */

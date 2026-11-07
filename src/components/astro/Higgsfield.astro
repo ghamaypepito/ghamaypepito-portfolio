@@ -1,0 +1,82 @@
+---
+import { SITE } from '@/content/site';
+import Icon from './Icon.astro';
+
+const { higgsfield } = SITE;
+---
+<section class="band higgsfield" id="higgsfield" aria-labelledby="higgsfield-h">
+  <div class="wrap">
+    <div class="higgsfield-panel">
+      <div>
+        <h2 class="section-title" id="higgsfield-h">{higgsfield.title}</h2>
+        <p class="section-sub">{higgsfield.lead}</p>
+        <a
+          class="btn-primary higgsfield-cta"
+          href={higgsfield.affiliateUrl}
+          target="_blank"
+          rel="sponsored nofollow noopener noreferrer"
+          aria-describedby="higgsfield-disclosure"
+        >
+          Explore Higgsfield
+          <Icon name="arrowUpRight" size={17} />
+        </a>
+        <p id="higgsfield-disclosure" class="higgsfield-disclosure">{higgsfield.disclosure}</p>
+      </div>
+
+      <figure>
+        <img
+          src="/higgsfield-affiliate.webp"
+          alt="A creator in a sculptural pleated garment against a blue sky"
+          width="2752"
+          height="1536"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>Promotional artwork from Higgsfield.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<style>
+  .higgsfield {
+    padding-block: clamp(40px, 6vw, 88px);
+  }
+  .higgsfield-panel {
+    display: grid;
+    grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+    align-items: center;
+    gap: clamp(28px, 5vw, 64px);
+    padding: clamp(22px, 5vw, 64px);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    background: var(--bg-2);
+  }
+  .section-title {
+    font-size: clamp(30px, 3.6vw, 46px);
+    text-wrap: balance;
+  }
+  .higgsfield-cta {
+    margin-top: 28px;
+  }
+  .higgsfield-disclosure,
+  figcaption {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  figure {
+    margin: 0;
+  }
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+  }
+  @media (max-width: 760px) {
+    .higgsfield-panel {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
